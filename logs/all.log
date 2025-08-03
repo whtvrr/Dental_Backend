@@ -1,0 +1,5 @@
+time="2025-08-03T18:28:14+05:00" level=info msg="Starting Dental Clinic Management System..." func="main.main()" file="main.go:29"
+time="2025-08-03T18:28:15+05:00" level=info msg="Successfully connected to MongoDB" func="main.main()" file="main.go:35"
+time="2025-08-03T18:28:15+05:00" level=info msg="Router created" func="main.main()" file="main.go:65"
+time="2025-08-03T18:28:15+05:00" level=info msg="Routes configured" func="main.main()" file="main.go:78"
+time="2025-08-03T18:28:15+05:00" level=info msg="Starting server on port :8080" func="main.main()" file="main.go:87"

@@ -1,0 +1,15 @@
+server:
+  port: ":8080"
+  
+database:
+  mongodb:
+    uri: "mongodb+srv://zhantikbeisenov:hkts8ZktROhjmfzG@shans.4ew12bo.mongodb.net/?retryWrites=true&w=majority&appName=Shans"
+    database: "Shans"
+    
+logging:
+  level: "info"
+  format: "json"
+
+auth:
+  jwt_secret: "Samal-Is-The-Best"
+  token_ttl: "24h"

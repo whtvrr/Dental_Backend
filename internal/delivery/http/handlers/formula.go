@@ -18,6 +18,17 @@ func NewFormulaHandler(formulaUseCase *usecases.FormulaUseCase) *FormulaHandler 
 	}
 }
 
+// GetFormula godoc
+// @Summary Get formula by ID
+// @Description Get a specific dental formula by its ID
+// @Tags formulas
+// @Produce json
+// @Security BearerAuth
+// @Param id path string true "Formula ID"
+// @Success 200 {object} entities.Formula
+// @Failure 400 {object} map[string]string "Bad Request"
+// @Failure 404 {object} map[string]string "Not Found"
+// @Router /formulas/{id} [get]
 func (h *FormulaHandler) GetFormula(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := primitive.ObjectIDFromHex(idStr)
@@ -35,6 +46,17 @@ func (h *FormulaHandler) GetFormula(c *gin.Context) {
 	c.JSON(http.StatusOK, formula)
 }
 
+// GetFormulaByUserID godoc
+// @Summary Get formula by user ID
+// @Description Get a user's dental formula by their user ID
+// @Tags formulas
+// @Produce json
+// @Security BearerAuth
+// @Param userId path string true "User ID"
+// @Success 200 {object} entities.Formula
+// @Failure 400 {object} map[string]string "Bad Request"
+// @Failure 404 {object} map[string]string "Not Found"
+// @Router /formulas/user/{userId} [get]
 func (h *FormulaHandler) GetFormulaByUserID(c *gin.Context) {
 	userIDStr := c.Param("userId")
 	userID, err := primitive.ObjectIDFromHex(userIDStr)

@@ -1,0 +1,1503 @@
+basePath: /api/v1
+definitions:
+  entities.Appointment:
+    properties:
+      anamnesis:
+        type: string
+      client_id:
+        type: string
+      comment:
+        type: string
+      complaint_id:
+        description: Medical fields - filled during appointment
+        type: string
+      created_at:
+        type: string
+      custom_complaint:
+        type: string
+      date_time:
+        type: string
+      diagnosis_id:
+        type: string
+      doctor_id:
+        type: string
+      duration_minutes:
+        type: integer
+      formula:
+        allOf:
+        - $ref: '#/definitions/entities.Formula'
+        description: Formula state after this appointment
+      id:
+        type: string
+      status:
+        $ref: '#/definitions/entities.AppointmentStatus'
+      treatment_id:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  entities.AppointmentStatus:
+    enum:
+    - scheduled
+    - in_progress
+    - completed
+    - canceled
+    type: string
+    x-enum-varnames:
+    - AppointmentStatusScheduled
+    - AppointmentStatusInProgress
+    - AppointmentStatusCompleted
+    - AppointmentStatusCanceled
+  entities.Complaint:
+    properties:
+      category:
+        description: pain, cosmetic, etc.
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      is_active:
+        type: boolean
+      title:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  entities.Formula:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      teeth:
+        items:
+          $ref: '#/definitions/entities.Tooth'
+        type: array
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    type: object
+  entities.Status:
+    properties:
+      code:
+        description: ICD-10 codes like K04, D05
+        type: string
+      color:
+        description: For tooth formula visualization
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      is_active:
+        type: boolean
+      title:
+        type: string
+      type:
+        $ref: '#/definitions/entities.StatusType'
+      updated_at:
+        type: string
+    type: object
+  entities.StatusType:
+    enum:
+    - diagnosis
+    - treatment
+    - tooth
+    type: string
+    x-enum-varnames:
+    - StatusTypeDiagnosis
+    - StatusTypeTreatment
+    - StatusTypeTooth
+  entities.Tooth:
+    properties:
+      gum:
+        $ref: '#/definitions/entities.ToothStatus'
+      number:
+        description: 1-32 for adult teeth
+        type: integer
+      roots:
+        $ref: '#/definitions/entities.ToothStatus'
+      segments:
+        additionalProperties:
+          $ref: '#/definitions/entities.ToothStatus'
+        description: mesial, distal, occlusal, etc.
+        type: object
+      whole:
+        $ref: '#/definitions/entities.ToothStatus'
+    type: object
+  entities.ToothStatus:
+    properties:
+      appointment_id:
+        type: string
+      note:
+        type: string
+      status_id:
+        type: string
+      timestamp:
+        type: string
+    type: object
+  entities.User:
+    properties:
+      address:
+        type: string
+      birth_date:
+        type: string
+      created_at:
+        type: string
+      email:
+        type: string
+      formula_id:
+        type: string
+      full_name:
+        type: string
+      gender:
+        type: string
+      id:
+        type: string
+      phone_number:
+        type: string
+      role:
+        $ref: '#/definitions/entities.UserRole'
+      updated_at:
+        type: string
+    type: object
+  entities.UserRole:
+    enum:
+    - admin
+    - doctor
+    - receptionist
+    - client
+    type: string
+    x-enum-varnames:
+    - RoleAdmin
+    - RoleDoctor
+    - RoleReceptionist
+    - RoleClient
+  usecases.AppointmentMedicalData:
+    properties:
+      anamnesis:
+        type: string
+      comment:
+        type: string
+      complaint_id:
+        type: string
+      custom_complaint:
+        type: string
+      diagnosis_id:
+        type: string
+      formula:
+        $ref: '#/definitions/entities.Formula'
+      treatment_id:
+        type: string
+    type: object
+  usecases.RefreshTokenRequest:
+    properties:
+      refresh_token:
+        type: string
+    required:
+    - refresh_token
+    type: object
+  usecases.SignInRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  usecases.SignUpRequest:
+    properties:
+      email:
+        type: string
+      full_name:
+        type: string
+      password:
+        minLength: 6
+        type: string
+      phone_number:
+        type: string
+      role:
+        $ref: '#/definitions/entities.UserRole'
+    required:
+    - email
+    - full_name
+    - password
+    - role
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is a dental clinic management system server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Dental Clinic Management System API
+  version: "1.0"
+paths:
+  /appointments:
+    get:
+      description: Get a paginated list of all appointments
+      parameters:
+      - default: 0
+        description: Offset for pagination
+        in: query
+        name: offset
+        type: integer
+      - default: 10
+        description: Limit for pagination
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              items:
+                $ref: '#/definitions/entities.Appointment'
+              type: array
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List all appointments with pagination
+      tags:
+      - appointments
+    post:
+      consumes:
+      - application/json
+      description: Create a new appointment with the provided details
+      parameters:
+      - description: Appointment data
+        in: body
+        name: appointment
+        required: true
+        schema:
+          $ref: '#/definitions/entities.Appointment'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entities.Appointment'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new appointment
+      tags:
+      - appointments
+  /appointments/{id}:
+    delete:
+      description: Delete an appointment by its ID
+      parameters:
+      - description: Appointment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete an appointment
+      tags:
+      - appointments
+    get:
+      description: Get a specific appointment by its ID
+      parameters:
+      - description: Appointment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.Appointment'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get appointment by ID
+      tags:
+      - appointments
+    put:
+      consumes:
+      - application/json
+      description: Update an appointment with the provided details
+      parameters:
+      - description: Appointment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated appointment data
+        in: body
+        name: appointment
+        required: true
+        schema:
+          $ref: '#/definitions/entities.Appointment'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.Appointment'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update an existing appointment
+      tags:
+      - appointments
+  /appointments/{id}/cancel:
+    post:
+      description: Mark an appointment as canceled
+      parameters:
+      - description: Appointment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Cancel an appointment
+      tags:
+      - appointments
+  /appointments/{id}/complete:
+    post:
+      consumes:
+      - application/json
+      description: Mark an appointment as completed and update with medical information
+      parameters:
+      - description: Appointment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Medical data for appointment
+        in: body
+        name: medicalData
+        required: true
+        schema:
+          $ref: '#/definitions/usecases.AppointmentMedicalData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Complete an appointment with medical data
+      tags:
+      - appointments
+  /appointments/client/{clientId}:
+    get:
+      description: Get all appointments for a specific client
+      parameters:
+      - description: Client ID
+        in: path
+        name: clientId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              items:
+                $ref: '#/definitions/entities.Appointment'
+              type: array
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get appointments for a specific client
+      tags:
+      - appointments
+  /appointments/doctor/{doctorId}:
+    get:
+      description: Get all appointments for a doctor within a date range
+      parameters:
+      - description: Doctor ID
+        in: path
+        name: doctorId
+        required: true
+        type: string
+      - description: Start date (YYYY-MM-DD)
+        in: query
+        name: from
+        required: true
+        type: string
+      - description: End date (YYYY-MM-DD)
+        in: query
+        name: to
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              items:
+                $ref: '#/definitions/entities.Appointment'
+              type: array
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get appointments for a specific doctor
+      tags:
+      - appointments
+  /auth/me:
+    get:
+      description: Get the current authenticated user's information
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get current user information
+      tags:
+      - auth
+  /auth/refresh:
+    post:
+      consumes:
+      - application/json
+      description: Refresh the access token using refresh token
+      parameters:
+      - description: Refresh token request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/usecases.RefreshTokenRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Refresh access token
+      tags:
+      - auth
+  /auth/signin:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate user and return tokens
+      parameters:
+      - description: Sign in request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/usecases.SignInRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Sign in user
+      tags:
+      - auth
+  /auth/signup:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user account
+      parameters:
+      - description: Sign up request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/usecases.SignUpRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Register a new user
+      tags:
+      - auth
+  /complaints:
+    get:
+      description: Get a paginated list of all complaints
+      parameters:
+      - default: 0
+        description: Offset for pagination
+        in: query
+        name: offset
+        type: integer
+      - default: 10
+        description: Limit for pagination
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              items:
+                $ref: '#/definitions/entities.Complaint'
+              type: array
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: List all complaints with pagination
+      tags:
+      - complaints
+    post:
+      consumes:
+      - application/json
+      description: Create a new patient complaint
+      parameters:
+      - description: Complaint data
+        in: body
+        name: complaint
+        required: true
+        schema:
+          $ref: '#/definitions/entities.Complaint'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entities.Complaint'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create a new complaint
+      tags:
+      - complaints
+  /complaints/{id}:
+    delete:
+      description: Delete a complaint by its ID
+      parameters:
+      - description: Complaint ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete a complaint
+      tags:
+      - complaints
+    get:
+      description: Get a specific complaint by its ID
+      parameters:
+      - description: Complaint ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.Complaint'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get complaint by ID
+      tags:
+      - complaints
+    put:
+      consumes:
+      - application/json
+      description: Update a complaint with the provided details
+      parameters:
+      - description: Complaint ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated complaint data
+        in: body
+        name: complaint
+        required: true
+        schema:
+          $ref: '#/definitions/entities.Complaint'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.Complaint'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update an existing complaint
+      tags:
+      - complaints
+  /complaints/active:
+    get:
+      description: Get a list of all active complaints
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              items:
+                $ref: '#/definitions/entities.Complaint'
+              type: array
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get all active complaints
+      tags:
+      - complaints
+  /formulas/{id}:
+    get:
+      description: Get a specific dental formula by its ID
+      parameters:
+      - description: Formula ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.Formula'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get formula by ID
+      tags:
+      - formulas
+  /formulas/user/{userId}:
+    get:
+      description: Get a user's dental formula by their user ID
+      parameters:
+      - description: User ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.Formula'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get formula by user ID
+      tags:
+      - formulas
+  /statuses:
+    get:
+      description: Get a paginated list of all statuses
+      parameters:
+      - default: 0
+        description: Offset for pagination
+        in: query
+        name: offset
+        type: integer
+      - default: 10
+        description: Limit for pagination
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              items:
+                $ref: '#/definitions/entities.Status'
+              type: array
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: List all statuses with pagination
+      tags:
+      - statuses
+    post:
+      consumes:
+      - application/json
+      description: Create a new dental status
+      parameters:
+      - description: Status data
+        in: body
+        name: status
+        required: true
+        schema:
+          $ref: '#/definitions/entities.Status'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entities.Status'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create a new status
+      tags:
+      - statuses
+  /statuses/{id}:
+    delete:
+      description: Delete a status by its ID
+      parameters:
+      - description: Status ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete a status
+      tags:
+      - statuses
+    get:
+      description: Get a specific status by its ID
+      parameters:
+      - description: Status ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.Status'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get status by ID
+      tags:
+      - statuses
+    put:
+      consumes:
+      - application/json
+      description: Update a status with the provided details
+      parameters:
+      - description: Status ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated status data
+        in: body
+        name: status
+        required: true
+        schema:
+          $ref: '#/definitions/entities.Status'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.Status'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update an existing status
+      tags:
+      - statuses
+  /statuses/diagnosis:
+    get:
+      description: Get all statuses of diagnosis type
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              items:
+                $ref: '#/definitions/entities.Status'
+              type: array
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get all diagnosis statuses
+      tags:
+      - statuses
+  /statuses/tooth:
+    get:
+      description: Get all statuses of tooth type
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              items:
+                $ref: '#/definitions/entities.Status'
+              type: array
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get all tooth statuses
+      tags:
+      - statuses
+  /statuses/treatment:
+    get:
+      description: Get all statuses of treatment type
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              items:
+                $ref: '#/definitions/entities.Status'
+              type: array
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get all treatment statuses
+      tags:
+      - statuses
+  /statuses/type/{type}:
+    get:
+      description: Get all active statuses filtered by type
+      parameters:
+      - description: Status type
+        in: path
+        name: type
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              items:
+                $ref: '#/definitions/entities.Status'
+              type: array
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get statuses by type
+      tags:
+      - statuses
+  /users:
+    get:
+      description: Get a paginated list of all users
+      parameters:
+      - default: 0
+        description: Offset for pagination
+        in: query
+        name: offset
+        type: integer
+      - default: 10
+        description: Limit for pagination
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              items:
+                $ref: '#/definitions/entities.User'
+              type: array
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: List all users with pagination
+      tags:
+      - users
+    post:
+      consumes:
+      - application/json
+      description: Create a new user with the provided details
+      parameters:
+      - description: User data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/entities.User'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entities.User'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create a new user
+      tags:
+      - users
+  /users/{id}:
+    delete:
+      description: Delete a user by their ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete a user
+      tags:
+      - users
+    get:
+      description: Get a specific user by their ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.User'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get user by ID
+      tags:
+      - users
+    put:
+      consumes:
+      - application/json
+      description: Update a user with the provided details
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated user data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/entities.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.User'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update an existing user
+      tags:
+      - users
+  /users/clients:
+    get:
+      description: Get a list of all users with client role
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              items:
+                $ref: '#/definitions/entities.User'
+              type: array
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get all clients
+      tags:
+      - users
+  /users/doctors:
+    get:
+      description: Get a list of all users with doctor role
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              items:
+                $ref: '#/definitions/entities.User'
+              type: array
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get all doctors
+      tags:
+      - users
+securityDefinitions:
+  BearerAuth:
+    description: Type "Bearer" followed by a space and JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

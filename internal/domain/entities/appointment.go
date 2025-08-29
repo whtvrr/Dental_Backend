@@ -31,16 +31,10 @@ type Appointment struct {
 	TreatmentID      *primitive.ObjectID `bson:"treatment_id,omitempty" json:"treatment_id,omitempty"`
 	Comment          *string            `bson:"comment,omitempty" json:"comment,omitempty"`
 	
-	// Formula changes made during this appointment
-	FormulaChanges   []FormulaChange    `bson:"formula_changes,omitempty" json:"formula_changes,omitempty"`
+	// Formula state after this appointment
+	Formula          *Formula           `bson:"formula,omitempty" json:"formula,omitempty"`
 	
 	CreatedAt        time.Time          `bson:"created_at" json:"created_at"`
 	UpdatedAt        time.Time          `bson:"updated_at" json:"updated_at"`
 }
 
-type FormulaChange struct {
-	ToothNumber int                `bson:"tooth_number" json:"tooth_number"`
-	Part        string             `bson:"part" json:"part"` // "whole", "gum", "roots", or segment name
-	StatusID    primitive.ObjectID `bson:"status_id" json:"status_id"`
-	Timestamp   time.Time          `bson:"timestamp" json:"timestamp"`
-}

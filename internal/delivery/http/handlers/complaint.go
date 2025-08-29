@@ -20,6 +20,18 @@ func NewComplaintHandler(complaintUseCase *usecases.ComplaintUseCase) *Complaint
 	}
 }
 
+// CreateComplaint godoc
+// @Summary Create a new complaint
+// @Description Create a new patient complaint
+// @Tags complaints
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param complaint body entities.Complaint true "Complaint data"
+// @Success 201 {object} entities.Complaint
+// @Failure 400 {object} map[string]string "Bad Request"
+// @Failure 500 {object} map[string]string "Internal Server Error"
+// @Router /complaints [post]
 func (h *ComplaintHandler) CreateComplaint(c *gin.Context) {
 	var complaint entities.Complaint
 	if err := c.ShouldBindJSON(&complaint); err != nil {
@@ -35,6 +47,17 @@ func (h *ComplaintHandler) CreateComplaint(c *gin.Context) {
 	c.JSON(http.StatusCreated, complaint)
 }
 
+// GetComplaint godoc
+// @Summary Get complaint by ID
+// @Description Get a specific complaint by its ID
+// @Tags complaints
+// @Produce json
+// @Security BearerAuth
+// @Param id path string true "Complaint ID"
+// @Success 200 {object} entities.Complaint
+// @Failure 400 {object} map[string]string "Bad Request"
+// @Failure 404 {object} map[string]string "Not Found"
+// @Router /complaints/{id} [get]
 func (h *ComplaintHandler) GetComplaint(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := primitive.ObjectIDFromHex(idStr)
@@ -52,6 +75,19 @@ func (h *ComplaintHandler) GetComplaint(c *gin.Context) {
 	c.JSON(http.StatusOK, complaint)
 }
 
+// UpdateComplaint godoc
+// @Summary Update an existing complaint
+// @Description Update a complaint with the provided details
+// @Tags complaints
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param id path string true "Complaint ID"
+// @Param complaint body entities.Complaint true "Updated complaint data"
+// @Success 200 {object} entities.Complaint
+// @Failure 400 {object} map[string]string "Bad Request"
+// @Failure 500 {object} map[string]string "Internal Server Error"
+// @Router /complaints/{id} [put]
 func (h *ComplaintHandler) UpdateComplaint(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := primitive.ObjectIDFromHex(idStr)
@@ -75,6 +111,17 @@ func (h *ComplaintHandler) UpdateComplaint(c *gin.Context) {
 	c.JSON(http.StatusOK, complaint)
 }
 
+// DeleteComplaint godoc
+// @Summary Delete a complaint
+// @Description Delete a complaint by its ID
+// @Tags complaints
+// @Produce json
+// @Security BearerAuth
+// @Param id path string true "Complaint ID"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]string "Bad Request"
+// @Failure 500 {object} map[string]string "Internal Server Error"
+// @Router /complaints/{id} [delete]
 func (h *ComplaintHandler) DeleteComplaint(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := primitive.ObjectIDFromHex(idStr)
@@ -91,6 +138,18 @@ func (h *ComplaintHandler) DeleteComplaint(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "complaint deleted successfully"})
 }
 
+// ListComplaints godoc
+// @Summary List all complaints with pagination
+// @Description Get a paginated list of all complaints
+// @Tags complaints
+// @Produce json
+// @Security BearerAuth
+// @Param offset query int false "Offset for pagination" default(0)
+// @Param limit query int false "Limit for pagination" default(10)
+// @Success 200 {object} map[string][]entities.Complaint
+// @Failure 400 {object} map[string]string "Bad Request"
+// @Failure 500 {object} map[string]string "Internal Server Error"
+// @Router /complaints [get]
 func (h *ComplaintHandler) ListComplaints(c *gin.Context) {
 	offsetStr := c.DefaultQuery("offset", "0")
 	limitStr := c.DefaultQuery("limit", "10")
@@ -116,6 +175,15 @@ func (h *ComplaintHandler) ListComplaints(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"complaints": complaints})
 }
 
+// GetActiveComplaints godoc
+// @Summary Get all active complaints
+// @Description Get a list of all active complaints
+// @Tags complaints
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} map[string][]entities.Complaint
+// @Failure 500 {object} map[string]string "Internal Server Error"
+// @Router /complaints/active [get]
 func (h *ComplaintHandler) GetActiveComplaints(c *gin.Context) {
 	complaints, err := h.complaintUseCase.GetActiveComplaints(c.Request.Context())
 	if err != nil {

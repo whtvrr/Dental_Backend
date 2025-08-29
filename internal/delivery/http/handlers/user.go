@@ -20,6 +20,18 @@ func NewUserHandler(userUseCase *usecases.UserUseCase) *UserHandler {
 	}
 }
 
+// CreateUser godoc
+// @Summary Create a new user
+// @Description Create a new user with the provided details
+// @Tags users
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param user body entities.User true "User data"
+// @Success 201 {object} entities.User
+// @Failure 400 {object} map[string]string "Bad Request"
+// @Failure 500 {object} map[string]string "Internal Server Error"
+// @Router /users [post]
 func (h *UserHandler) CreateUser(c *gin.Context) {
 	var user entities.User
 	if err := c.ShouldBindJSON(&user); err != nil {
@@ -35,6 +47,17 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 	c.JSON(http.StatusCreated, user)
 }
 
+// GetUser godoc
+// @Summary Get user by ID
+// @Description Get a specific user by their ID
+// @Tags users
+// @Produce json
+// @Security BearerAuth
+// @Param id path string true "User ID"
+// @Success 200 {object} entities.User
+// @Failure 400 {object} map[string]string "Bad Request"
+// @Failure 404 {object} map[string]string "Not Found"
+// @Router /users/{id} [get]
 func (h *UserHandler) GetUser(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := primitive.ObjectIDFromHex(idStr)
@@ -52,6 +75,19 @@ func (h *UserHandler) GetUser(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
+// UpdateUser godoc
+// @Summary Update an existing user
+// @Description Update a user with the provided details
+// @Tags users
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param id path string true "User ID"
+// @Param user body entities.User true "Updated user data"
+// @Success 200 {object} entities.User
+// @Failure 400 {object} map[string]string "Bad Request"
+// @Failure 500 {object} map[string]string "Internal Server Error"
+// @Router /users/{id} [put]
 func (h *UserHandler) UpdateUser(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := primitive.ObjectIDFromHex(idStr)
@@ -75,6 +111,17 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
+// DeleteUser godoc
+// @Summary Delete a user
+// @Description Delete a user by their ID
+// @Tags users
+// @Produce json
+// @Security BearerAuth
+// @Param id path string true "User ID"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]string "Bad Request"
+// @Failure 500 {object} map[string]string "Internal Server Error"
+// @Router /users/{id} [delete]
 func (h *UserHandler) DeleteUser(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := primitive.ObjectIDFromHex(idStr)
@@ -91,6 +138,18 @@ func (h *UserHandler) DeleteUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "user deleted successfully"})
 }
 
+// ListUsers godoc
+// @Summary List all users with pagination
+// @Description Get a paginated list of all users
+// @Tags users
+// @Produce json
+// @Security BearerAuth
+// @Param offset query int false "Offset for pagination" default(0)
+// @Param limit query int false "Limit for pagination" default(10)
+// @Success 200 {object} map[string][]entities.User
+// @Failure 400 {object} map[string]string "Bad Request"
+// @Failure 500 {object} map[string]string "Internal Server Error"
+// @Router /users [get]
 func (h *UserHandler) ListUsers(c *gin.Context) {
 	offsetStr := c.DefaultQuery("offset", "0")
 	limitStr := c.DefaultQuery("limit", "10")
@@ -116,6 +175,15 @@ func (h *UserHandler) ListUsers(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"users": users})
 }
 
+// GetDoctors godoc
+// @Summary Get all doctors
+// @Description Get a list of all users with doctor role
+// @Tags users
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} map[string][]entities.User
+// @Failure 500 {object} map[string]string "Internal Server Error"
+// @Router /users/doctors [get]
 func (h *UserHandler) GetDoctors(c *gin.Context) {
 	doctors, err := h.userUseCase.GetDoctors(c.Request.Context())
 	if err != nil {
@@ -126,6 +194,15 @@ func (h *UserHandler) GetDoctors(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"doctors": doctors})
 }
 
+// GetClients godoc
+// @Summary Get all clients
+// @Description Get a list of all users with client role
+// @Tags users
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} map[string][]entities.User
+// @Failure 500 {object} map[string]string "Internal Server Error"
+// @Router /users/clients [get]
 func (h *UserHandler) GetClients(c *gin.Context) {
 	clients, err := h.userUseCase.GetClients(c.Request.Context())
 	if err != nil {

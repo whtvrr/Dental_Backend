@@ -73,27 +73,24 @@ func (uc *AppointmentUseCase) CompleteAppointment(ctx context.Context, id primit
 	appointment.TreatmentID = medicalData.TreatmentID
 	appointment.Comment = medicalData.Comment
 	appointment.Status = entities.AppointmentStatusCompleted
-	appointment.FormulaChanges = medicalData.FormulaChanges
+	appointment.Formula = medicalData.Formula
 	
-	// Update client's formula if there are changes
-	if len(medicalData.FormulaChanges) > 0 {
+	// Update client's formula if provided
+	if medicalData.Formula != nil {
 		client, err := uc.userRepo.GetByID(ctx, appointment.ClientID)
 		if err != nil {
 			return err
 		}
 		
 		if client.FormulaID != nil {
-			for _, change := range medicalData.FormulaChanges {
-				toothStatus := &entities.ToothStatus{
-					StatusID:      change.StatusID,
-					AppointmentID: appointment.ID,
-					Timestamp:     time.Now(),
-				}
-				
-				err := uc.formulaRepo.UpdateToothStatus(ctx, *client.FormulaID, change.ToothNumber, change.Part, toothStatus)
-				if err != nil {
-					return err
-				}
+			// Update the client's formula with the new state
+			medicalData.Formula.ID = *client.FormulaID
+			medicalData.Formula.UserID = appointment.ClientID
+			medicalData.Formula.UpdatedAt = time.Now()
+			
+			err := uc.formulaRepo.Update(ctx, medicalData.Formula)
+			if err != nil {
+				return err
 			}
 		}
 	}
@@ -138,5 +135,5 @@ type AppointmentMedicalData struct {
 	DiagnosisID     *primitive.ObjectID     `json:"diagnosis_id,omitempty"`
 	TreatmentID     *primitive.ObjectID     `json:"treatment_id,omitempty"`
 	Comment         *string                 `json:"comment,omitempty"`
-	FormulaChanges  []entities.FormulaChange `json:"formula_changes,omitempty"`
+	Formula         *entities.Formula       `json:"formula,omitempty"`
 }

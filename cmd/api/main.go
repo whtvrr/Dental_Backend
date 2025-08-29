@@ -6,6 +6,8 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/whtvrr/Dental_Backend/internal/auth"
 	"github.com/whtvrr/Dental_Backend/internal/config"
 	"github.com/whtvrr/Dental_Backend/internal/delivery/http"
@@ -15,7 +17,29 @@ import (
 	"github.com/whtvrr/Dental_Backend/internal/infrastructure/persistence/mongodb"
 	"github.com/whtvrr/Dental_Backend/internal/usecases"
 	logger "github.com/whtvrr/Dental_Backend/pkg"
+	
+	_ "github.com/whtvrr/Dental_Backend/docs" // This line is necessary for go-swagger to find your docs!
 )
+
+// @title Dental Clinic Management System API
+// @version 1.0
+// @description This is a dental clinic management system server.
+// @termsOfService http://swagger.io/terms/
+
+// @contact.name API Support
+// @contact.url http://www.swagger.io/support
+// @contact.email support@swagger.io
+
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host localhost:8080
+// @BasePath /api/v1
+
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @description Type "Bearer" followed by a space and JWT token.
 
 func main() {
 	var cfg *config.Config
@@ -94,6 +118,10 @@ func main() {
 
 	http.SetupRoutes(r, handlerGroup, authMiddleware)
 	l.Info("Routes configured")
+
+	// Swagger endpoint
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+	l.Info("Swagger UI available at /swagger/index.html")
 
 	r.GET("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{

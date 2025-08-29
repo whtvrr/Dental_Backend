@@ -15,11 +15,11 @@ type Formula struct {
 }
 
 type Tooth struct {
-	Number   int                `bson:"number" json:"number"` // 1-32 for adult teeth
-	Whole    *ToothStatus       `bson:"whole,omitempty" json:"whole,omitempty"`
-	Gum      *ToothStatus       `bson:"gum,omitempty" json:"gum,omitempty"`
-	Roots    *ToothStatus       `bson:"roots,omitempty" json:"roots,omitempty"`
-	Segments map[string]*ToothStatus `bson:"segments,omitempty" json:"segments,omitempty"` // mesial, distal, occlusal, etc.
+	Number   int                     `bson:"number" json:"number"`
+	Whole    *ToothStatus            `bson:"whole,omitempty" json:"whole,omitempty"`
+	Gum      *ToothStatus            `bson:"gum,omitempty" json:"gum,omitempty"`
+	Roots    *ToothStatus            `bson:"roots,omitempty" json:"roots,omitempty"`
+	Segments map[string]*ToothStatus `bson:"segments,omitempty" json:"segments,omitempty"`
 }
 
 type ToothStatus struct {
@@ -27,6 +27,7 @@ type ToothStatus struct {
 	AppointmentID primitive.ObjectID `bson:"appointment_id" json:"appointment_id"`
 	Timestamp     time.Time          `bson:"timestamp" json:"timestamp"`
 	Note          *string            `bson:"note,omitempty" json:"note,omitempty"`
+	Segment       *string            `bson:"segment,omitempty" json:"segment,omitempty"`
 }
 
 // Initialize a new formula with 32 teeth

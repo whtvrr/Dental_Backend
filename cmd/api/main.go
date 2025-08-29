@@ -17,24 +17,17 @@ import (
 	"github.com/whtvrr/Dental_Backend/internal/infrastructure/persistence/mongodb"
 	"github.com/whtvrr/Dental_Backend/internal/usecases"
 	logger "github.com/whtvrr/Dental_Backend/pkg"
-	
+
 	_ "github.com/whtvrr/Dental_Backend/docs" // This line is necessary for go-swagger to find your docs!
 )
 
 // @title Dental Clinic Management System API
 // @version 1.0
 // @description This is a dental clinic management system server.
-// @termsOfService http://swagger.io/terms/
 
-// @contact.name API Support
-// @contact.url http://www.swagger.io/support
-// @contact.email support@swagger.io
-
-// @license.name Apache 2.0
-// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
-
-// @host localhost:8080
+// @host dental-backend-s893.onrender.com
 // @BasePath /api/v1
+// @schemes https
 
 // @securityDefinitions.apikey BearerAuth
 // @in header

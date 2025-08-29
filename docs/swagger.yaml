@@ -232,17 +232,10 @@ definitions:
     - password
     - role
     type: object
-host: localhost:8080
+host: dental-backend-s893.onrender.com
 info:
-  contact:
-    email: support@swagger.io
-    name: API Support
-    url: http://www.swagger.io/support
+  contact: {}
   description: This is a dental clinic management system server.
-  license:
-    name: Apache 2.0
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
-  termsOfService: http://swagger.io/terms/
   title: Dental Clinic Management System API
   version: "1.0"
 paths:
@@ -1494,6 +1487,8 @@ paths:
       summary: Get all doctors
       tags:
       - users
+schemes:
+- https
 securityDefinitions:
   BearerAuth:
     description: Type "Bearer" followed by a space and JWT token.

@@ -2322,8 +2322,8 @@ var SwaggerInfo = &swag.Spec{
 	Description:      "This is a dental clinic management system server.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
-	LeftDelim:        "{{",
-	RightDelim:       "}}",
+	// LeftDelim:        "{{",
+	// RightDelim:       "}}",
 }
 
 func init() {

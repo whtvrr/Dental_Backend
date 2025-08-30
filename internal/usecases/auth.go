@@ -33,6 +33,18 @@ type RefreshTokenRequest struct {
 	RefreshToken string `json:"refresh_token" binding:"required"`
 }
 
+type SignInResponse struct {
+	Tokens *auth.TokenPair   `json:"tokens"`
+	User   *UserInfo         `json:"user"`
+}
+
+type UserInfo struct {
+	ID       string            `json:"id"`
+	Email    string            `json:"email"`
+	FullName string            `json:"full_name"`
+	Role     entities.UserRole `json:"role"`
+}
+
 func NewAuthUseCase(userRepo repositories.UserRepository, jwtManager *auth.JWTManager) *AuthUseCase {
 	return &AuthUseCase{
 		userRepo:   userRepo,
@@ -111,6 +123,51 @@ func (uc *AuthUseCase) SignIn(ctx context.Context, req *SignInRequest) (*auth.To
 
 	// Generate token pair
 	return uc.jwtManager.GenerateTokenPair(user)
+}
+
+func (uc *AuthUseCase) SignInWithUserInfo(ctx context.Context, req *SignInRequest) (*SignInResponse, error) {
+	// Get user by email
+	user, err := uc.userRepo.GetByEmail(ctx, req.Email)
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, errors.New("invalid email or password")
+		}
+		return nil, err
+	}
+
+	// Check if user can authenticate
+	if !user.CanAuthenticate() {
+		return nil, errors.New("user cannot authenticate")
+	}
+
+	// Check if user has password
+	if user.PasswordHash == nil {
+		return nil, errors.New("user has no password set")
+	}
+
+	// Verify password
+	if !auth.CheckPassword(*user.PasswordHash, req.Password) {
+		return nil, errors.New("invalid email or password")
+	}
+
+	// Generate token pair
+	tokenPair, err := uc.jwtManager.GenerateTokenPair(user)
+	if err != nil {
+		return nil, err
+	}
+
+	// Create user info response
+	userInfo := &UserInfo{
+		ID:       user.ID.Hex(),
+		Email:    *user.Email,
+		FullName: user.FullName,
+		Role:     user.Role,
+	}
+
+	return &SignInResponse{
+		Tokens: tokenPair,
+		User:   userInfo,
+	}, nil
 }
 
 func (uc *AuthUseCase) RefreshToken(ctx context.Context, req *RefreshTokenRequest) (*auth.TokenPair, error) {

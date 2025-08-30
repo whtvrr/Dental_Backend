@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/whtvrr/Dental_Backend/internal/delivery/http/response"
 	"github.com/whtvrr/Dental_Backend/internal/domain/entities"
 	"github.com/whtvrr/Dental_Backend/internal/usecases"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -28,23 +29,23 @@ func NewAppointmentHandler(appointmentUseCase *usecases.AppointmentUseCase) *App
 // @Accept json
 // @Produce json
 // @Param appointment body entities.Appointment true "Appointment data"
-// @Success 201 {object} entities.Appointment
-// @Failure 400 {object} map[string]string "Bad Request"
-// @Failure 500 {object} map[string]string "Internal Server Error"
+// @Success 201 {object} response.StandardResponse
+// @Failure 400 {object} response.StandardResponse "Bad Request"
+// @Failure 500 {object} response.StandardResponse "Internal Server Error"
 // @Router /appointments [post]
 func (h *AppointmentHandler) CreateAppointment(c *gin.Context) {
 	var appointment entities.Appointment
 	if err := c.ShouldBindJSON(&appointment); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, response.BadRequest(err.Error()))
 		return
 	}
 
 	if err := h.appointmentUseCase.CreateAppointment(c.Request.Context(), &appointment); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.InternalServerError(err.Error()))
 		return
 	}
 
-	c.JSON(http.StatusCreated, appointment)
+	c.JSON(http.StatusCreated, response.Created("Appointment created successfully", appointment))
 }
 
 // GetAppointment godoc
@@ -53,25 +54,25 @@ func (h *AppointmentHandler) CreateAppointment(c *gin.Context) {
 // @Tags appointments
 // @Produce json
 // @Param id path string true "Appointment ID"
-// @Success 200 {object} entities.Appointment
-// @Failure 400 {object} map[string]string "Bad Request"
-// @Failure 404 {object} map[string]string "Not Found"
+// @Success 200 {object} response.StandardResponse
+// @Failure 400 {object} response.StandardResponse "Bad Request"
+// @Failure 404 {object} response.StandardResponse "Not Found"
 // @Router /appointments/{id} [get]
 func (h *AppointmentHandler) GetAppointment(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := primitive.ObjectIDFromHex(idStr)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid appointment id"})
+		c.JSON(http.StatusBadRequest, response.BadRequest("invalid appointment id"))
 		return
 	}
 
 	appointment, err := h.appointmentUseCase.GetAppointment(c.Request.Context(), id)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "appointment not found"})
+		c.JSON(http.StatusNotFound, response.Error(http.StatusNotFound, "appointment not found"))
 		return
 	}
 
-	c.JSON(http.StatusOK, appointment)
+	c.JSON(http.StatusOK, response.OK("Appointment retrieved successfully", appointment))
 }
 
 // UpdateAppointment godoc
@@ -82,31 +83,31 @@ func (h *AppointmentHandler) GetAppointment(c *gin.Context) {
 // @Produce json
 // @Param id path string true "Appointment ID"
 // @Param appointment body entities.Appointment true "Updated appointment data"
-// @Success 200 {object} entities.Appointment
-// @Failure 400 {object} map[string]string "Bad Request"
-// @Failure 500 {object} map[string]string "Internal Server Error"
+// @Success 200 {object} response.StandardResponse
+// @Failure 400 {object} response.StandardResponse "Bad Request"
+// @Failure 500 {object} response.StandardResponse "Internal Server Error"
 // @Router /appointments/{id} [put]
 func (h *AppointmentHandler) UpdateAppointment(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := primitive.ObjectIDFromHex(idStr)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid appointment id"})
+		c.JSON(http.StatusBadRequest, response.BadRequest("invalid appointment id"))
 		return
 	}
 
 	var appointment entities.Appointment
 	if err := c.ShouldBindJSON(&appointment); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, response.BadRequest(err.Error()))
 		return
 	}
 	appointment.ID = id
 
 	if err := h.appointmentUseCase.UpdateAppointment(c.Request.Context(), &appointment); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.InternalServerError(err.Error()))
 		return
 	}
 
-	c.JSON(http.StatusOK, appointment)
+	c.JSON(http.StatusOK, response.OK("Appointment updated successfully", appointment))
 }
 
 // CompleteAppointment godoc
@@ -117,30 +118,30 @@ func (h *AppointmentHandler) UpdateAppointment(c *gin.Context) {
 // @Produce json
 // @Param id path string true "Appointment ID"
 // @Param medicalData body usecases.AppointmentMedicalData true "Medical data for appointment"
-// @Success 200 {object} map[string]string
-// @Failure 400 {object} map[string]string "Bad Request"
-// @Failure 500 {object} map[string]string "Internal Server Error"
+// @Success 200 {object} response.StandardResponse
+// @Failure 400 {object} response.StandardResponse "Bad Request"
+// @Failure 500 {object} response.StandardResponse "Internal Server Error"
 // @Router /appointments/{id}/complete [post]
 func (h *AppointmentHandler) CompleteAppointment(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := primitive.ObjectIDFromHex(idStr)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid appointment id"})
+		c.JSON(http.StatusBadRequest, response.BadRequest("invalid appointment id"))
 		return
 	}
 
 	var medicalData usecases.AppointmentMedicalData
 	if err := c.ShouldBindJSON(&medicalData); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, response.BadRequest(err.Error()))
 		return
 	}
 
 	if err := h.appointmentUseCase.CompleteAppointment(c.Request.Context(), id, &medicalData); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.InternalServerError(err.Error()))
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "appointment completed successfully"})
+	c.JSON(http.StatusOK, response.OK("Appointment completed successfully", nil))
 }
 
 // CancelAppointment godoc
@@ -149,24 +150,24 @@ func (h *AppointmentHandler) CompleteAppointment(c *gin.Context) {
 // @Tags appointments
 // @Produce json
 // @Param id path string true "Appointment ID"
-// @Success 200 {object} map[string]string
-// @Failure 400 {object} map[string]string "Bad Request"
-// @Failure 500 {object} map[string]string "Internal Server Error"
+// @Success 200 {object} response.StandardResponse
+// @Failure 400 {object} response.StandardResponse "Bad Request"
+// @Failure 500 {object} response.StandardResponse "Internal Server Error"
 // @Router /appointments/{id}/cancel [post]
 func (h *AppointmentHandler) CancelAppointment(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := primitive.ObjectIDFromHex(idStr)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid appointment id"})
+		c.JSON(http.StatusBadRequest, response.BadRequest("invalid appointment id"))
 		return
 	}
 
 	if err := h.appointmentUseCase.CancelAppointment(c.Request.Context(), id); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.InternalServerError(err.Error()))
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "appointment canceled successfully"})
+	c.JSON(http.StatusOK, response.OK("Appointment canceled successfully", nil))
 }
 
 // DeleteAppointment godoc
@@ -175,24 +176,24 @@ func (h *AppointmentHandler) CancelAppointment(c *gin.Context) {
 // @Tags appointments
 // @Produce json
 // @Param id path string true "Appointment ID"
-// @Success 200 {object} map[string]string
-// @Failure 400 {object} map[string]string "Bad Request"
-// @Failure 500 {object} map[string]string "Internal Server Error"
+// @Success 200 {object} response.StandardResponse
+// @Failure 400 {object} response.StandardResponse "Bad Request"
+// @Failure 500 {object} response.StandardResponse "Internal Server Error"
 // @Router /appointments/{id} [delete]
 func (h *AppointmentHandler) DeleteAppointment(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := primitive.ObjectIDFromHex(idStr)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid appointment id"})
+		c.JSON(http.StatusBadRequest, response.BadRequest("invalid appointment id"))
 		return
 	}
 
 	if err := h.appointmentUseCase.DeleteAppointment(c.Request.Context(), id); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.InternalServerError(err.Error()))
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "appointment deleted successfully"})
+	c.JSON(http.StatusOK, response.OK("Appointment deleted successfully", nil))
 }
 
 // ListAppointments godoc
@@ -202,9 +203,9 @@ func (h *AppointmentHandler) DeleteAppointment(c *gin.Context) {
 // @Produce json
 // @Param offset query int false "Offset for pagination" default(0)
 // @Param limit query int false "Limit for pagination" default(10)
-// @Success 200 {object} map[string][]entities.Appointment
-// @Failure 400 {object} map[string]string "Bad Request"
-// @Failure 500 {object} map[string]string "Internal Server Error"
+// @Success 200 {object} response.StandardResponse
+// @Failure 400 {object} response.StandardResponse "Bad Request"
+// @Failure 500 {object} response.StandardResponse "Internal Server Error"
 // @Router /appointments [get]
 func (h *AppointmentHandler) ListAppointments(c *gin.Context) {
 	offsetStr := c.DefaultQuery("offset", "0")
@@ -212,23 +213,23 @@ func (h *AppointmentHandler) ListAppointments(c *gin.Context) {
 
 	offset, err := strconv.Atoi(offsetStr)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid offset"})
+		c.JSON(http.StatusBadRequest, response.BadRequest("invalid offset"))
 		return
 	}
 
 	limit, err := strconv.Atoi(limitStr)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid limit"})
+		c.JSON(http.StatusBadRequest, response.BadRequest("invalid limit"))
 		return
 	}
 
 	appointments, err := h.appointmentUseCase.ListAppointments(c.Request.Context(), offset, limit)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.InternalServerError(err.Error()))
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"appointments": appointments})
+	c.JSON(http.StatusOK, response.OK("Appointments retrieved successfully", gin.H{"appointments": appointments}))
 }
 
 // GetDoctorAppointments godoc
@@ -239,15 +240,15 @@ func (h *AppointmentHandler) ListAppointments(c *gin.Context) {
 // @Param doctorId path string true "Doctor ID"
 // @Param from query string true "Start date (YYYY-MM-DD)"
 // @Param to query string true "End date (YYYY-MM-DD)"
-// @Success 200 {object} map[string][]entities.Appointment
-// @Failure 400 {object} map[string]string "Bad Request"
-// @Failure 500 {object} map[string]string "Internal Server Error"
+// @Success 200 {object} response.StandardResponse
+// @Failure 400 {object} response.StandardResponse "Bad Request"
+// @Failure 500 {object} response.StandardResponse "Internal Server Error"
 // @Router /appointments/doctor/{doctorId} [get]
 func (h *AppointmentHandler) GetDoctorAppointments(c *gin.Context) {
 	doctorIDStr := c.Param("doctorId")
 	doctorID, err := primitive.ObjectIDFromHex(doctorIDStr)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid doctor id"})
+		c.JSON(http.StatusBadRequest, response.BadRequest("invalid doctor id"))
 		return
 	}
 
@@ -256,13 +257,13 @@ func (h *AppointmentHandler) GetDoctorAppointments(c *gin.Context) {
 
 	from, err := time.Parse("2006-01-02", fromStr)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid from date format (YYYY-MM-DD)"})
+		c.JSON(http.StatusBadRequest, response.BadRequest("invalid from date format (YYYY-MM-DD)"))
 		return
 	}
 
 	to, err := time.Parse("2006-01-02", toStr)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid to date format (YYYY-MM-DD)"})
+		c.JSON(http.StatusBadRequest, response.BadRequest("invalid to date format (YYYY-MM-DD)"))
 		return
 	}
 
@@ -270,11 +271,11 @@ func (h *AppointmentHandler) GetDoctorAppointments(c *gin.Context) {
 
 	appointments, err := h.appointmentUseCase.GetDoctorAppointments(c.Request.Context(), doctorID, from, to)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.InternalServerError(err.Error()))
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"appointments": appointments})
+	c.JSON(http.StatusOK, response.OK("Doctor appointments retrieved successfully", gin.H{"appointments": appointments}))
 }
 
 // GetClientAppointments godoc
@@ -283,23 +284,23 @@ func (h *AppointmentHandler) GetDoctorAppointments(c *gin.Context) {
 // @Tags appointments
 // @Produce json
 // @Param clientId path string true "Client ID"
-// @Success 200 {object} map[string][]entities.Appointment
-// @Failure 400 {object} map[string]string "Bad Request"
-// @Failure 500 {object} map[string]string "Internal Server Error"
+// @Success 200 {object} response.StandardResponse
+// @Failure 400 {object} response.StandardResponse "Bad Request"
+// @Failure 500 {object} response.StandardResponse "Internal Server Error"
 // @Router /appointments/client/{clientId} [get]
 func (h *AppointmentHandler) GetClientAppointments(c *gin.Context) {
 	clientIDStr := c.Param("clientId")
 	clientID, err := primitive.ObjectIDFromHex(clientIDStr)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid client id"})
+		c.JSON(http.StatusBadRequest, response.BadRequest("invalid client id"))
 		return
 	}
 
 	appointments, err := h.appointmentUseCase.GetClientAppointments(c.Request.Context(), clientID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.InternalServerError(err.Error()))
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"appointments": appointments})
+	c.JSON(http.StatusOK, response.OK("Client appointments retrieved successfully", gin.H{"appointments": appointments}))
 }

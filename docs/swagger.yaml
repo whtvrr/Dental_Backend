@@ -119,14 +119,12 @@ definitions:
       gum:
         $ref: '#/definitions/entities.ToothStatus'
       number:
-        description: 1-32 for adult teeth
         type: integer
       roots:
         $ref: '#/definitions/entities.ToothStatus'
       segments:
         additionalProperties:
           $ref: '#/definitions/entities.ToothStatus'
-        description: mesial, distal, occlusal, etc.
         type: object
       whole:
         $ref: '#/definitions/entities.ToothStatus'
@@ -136,6 +134,8 @@ definitions:
       appointment_id:
         type: string
       note:
+        type: string
+      segment:
         type: string
       status_id:
         type: string
@@ -179,6 +179,14 @@ definitions:
     - RoleDoctor
     - RoleReceptionist
     - RoleClient
+  response.StandardResponse:
+    properties:
+      data: {}
+      message:
+        type: string
+      status:
+        type: integer
+    type: object
   usecases.AppointmentMedicalData:
     properties:
       anamnesis:
@@ -259,23 +267,15 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties:
-              items:
-                $ref: '#/definitions/entities.Appointment'
-              type: array
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
       summary: List all appointments with pagination
       tags:
       - appointments
@@ -296,19 +296,15 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/entities.Appointment'
+            $ref: '#/definitions/response.StandardResponse'
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
       summary: Create a new appointment
       tags:
       - appointments
@@ -327,21 +323,15 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
       summary: Delete an appointment
       tags:
       - appointments
@@ -359,19 +349,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/entities.Appointment'
+            $ref: '#/definitions/response.StandardResponse'
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "404":
           description: Not Found
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
       summary: Get appointment by ID
       tags:
       - appointments
@@ -397,19 +383,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/entities.Appointment'
+            $ref: '#/definitions/response.StandardResponse'
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
       summary: Update an existing appointment
       tags:
       - appointments
@@ -428,21 +410,15 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
       summary: Cancel an appointment
       tags:
       - appointments
@@ -469,21 +445,15 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
       summary: Complete an appointment with medical data
       tags:
       - appointments
@@ -502,23 +472,15 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties:
-              items:
-                $ref: '#/definitions/entities.Appointment'
-              type: array
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
       summary: Get appointments for a specific client
       tags:
       - appointments
@@ -547,23 +509,15 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties:
-              items:
-                $ref: '#/definitions/entities.Appointment'
-              type: array
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
       summary: Get appointments for a specific doctor
       tags:
       - appointments
@@ -576,14 +530,11 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "401":
           description: Unauthorized
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
       security:
       - BearerAuth: []
       summary: Get current user information
@@ -607,20 +558,15 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "401":
           description: Unauthorized
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
       summary: Refresh access token
       tags:
       - auth
@@ -628,7 +574,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Authenticate user and return tokens
+      description: Authenticate user and return tokens with user role
       parameters:
       - description: Sign in request
         in: body
@@ -642,20 +588,15 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "401":
           description: Unauthorized
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
       summary: Sign in user
       tags:
       - auth
@@ -677,14 +618,11 @@ paths:
         "201":
           description: Created
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
       summary: Register a new user
       tags:
       - auth
@@ -708,23 +646,15 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties:
-              items:
-                $ref: '#/definitions/entities.Complaint'
-              type: array
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
       security:
       - BearerAuth: []
       summary: List all complaints with pagination
@@ -747,19 +677,15 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/entities.Complaint'
+            $ref: '#/definitions/response.StandardResponse'
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
       security:
       - BearerAuth: []
       summary: Create a new complaint
@@ -780,21 +706,15 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
       security:
       - BearerAuth: []
       summary: Delete a complaint
@@ -814,19 +734,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/entities.Complaint'
+            $ref: '#/definitions/response.StandardResponse'
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "404":
           description: Not Found
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
       security:
       - BearerAuth: []
       summary: Get complaint by ID
@@ -854,19 +770,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/entities.Complaint'
+            $ref: '#/definitions/response.StandardResponse'
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
       security:
       - BearerAuth: []
       summary: Update an existing complaint
@@ -881,17 +793,11 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties:
-              items:
-                $ref: '#/definitions/entities.Complaint'
-              type: array
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
       security:
       - BearerAuth: []
       summary: Get all active complaints
@@ -912,19 +818,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/entities.Formula'
+            $ref: '#/definitions/response.StandardResponse'
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "404":
           description: Not Found
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
       security:
       - BearerAuth: []
       summary: Get formula by ID
@@ -945,19 +847,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/entities.Formula'
+            $ref: '#/definitions/response.StandardResponse'
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "404":
           description: Not Found
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
       security:
       - BearerAuth: []
       summary: Get formula by user ID
@@ -983,23 +881,15 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties:
-              items:
-                $ref: '#/definitions/entities.Status'
-              type: array
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
       security:
       - BearerAuth: []
       summary: List all statuses with pagination
@@ -1022,19 +912,15 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/entities.Status'
+            $ref: '#/definitions/response.StandardResponse'
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
       security:
       - BearerAuth: []
       summary: Create a new status
@@ -1055,21 +941,15 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
       security:
       - BearerAuth: []
       summary: Delete a status
@@ -1089,19 +969,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/entities.Status'
+            $ref: '#/definitions/response.StandardResponse'
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "404":
           description: Not Found
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
       security:
       - BearerAuth: []
       summary: Get status by ID
@@ -1129,19 +1005,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/entities.Status'
+            $ref: '#/definitions/response.StandardResponse'
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
       security:
       - BearerAuth: []
       summary: Update an existing status
@@ -1156,17 +1028,11 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties:
-              items:
-                $ref: '#/definitions/entities.Status'
-              type: array
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
       security:
       - BearerAuth: []
       summary: Get all diagnosis statuses
@@ -1181,17 +1047,11 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties:
-              items:
-                $ref: '#/definitions/entities.Status'
-              type: array
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
       security:
       - BearerAuth: []
       summary: Get all tooth statuses
@@ -1206,17 +1066,11 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties:
-              items:
-                $ref: '#/definitions/entities.Status'
-              type: array
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
       security:
       - BearerAuth: []
       summary: Get all treatment statuses
@@ -1237,17 +1091,11 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties:
-              items:
-                $ref: '#/definitions/entities.Status'
-              type: array
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
       security:
       - BearerAuth: []
       summary: Get statuses by type
@@ -1273,23 +1121,15 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties:
-              items:
-                $ref: '#/definitions/entities.User'
-              type: array
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
       security:
       - BearerAuth: []
       summary: List all users with pagination
@@ -1312,19 +1152,15 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/entities.User'
+            $ref: '#/definitions/response.StandardResponse'
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
       security:
       - BearerAuth: []
       summary: Create a new user
@@ -1345,21 +1181,15 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
       security:
       - BearerAuth: []
       summary: Delete a user
@@ -1379,19 +1209,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/entities.User'
+            $ref: '#/definitions/response.StandardResponse'
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "404":
           description: Not Found
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
       security:
       - BearerAuth: []
       summary: Get user by ID
@@ -1419,19 +1245,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/entities.User'
+            $ref: '#/definitions/response.StandardResponse'
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
       security:
       - BearerAuth: []
       summary: Update an existing user
@@ -1446,17 +1268,11 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties:
-              items:
-                $ref: '#/definitions/entities.User'
-              type: array
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
       security:
       - BearerAuth: []
       summary: Get all clients
@@ -1471,17 +1287,11 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties:
-              items:
-                $ref: '#/definitions/entities.User'
-              type: array
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.StandardResponse'
       security:
       - BearerAuth: []
       summary: Get all doctors

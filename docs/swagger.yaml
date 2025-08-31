@@ -140,31 +140,6 @@ definitions:
       timestamp:
         type: string
     type: object
-  entities.User:
-    properties:
-      address:
-        type: string
-      birth_date:
-        type: string
-      created_at:
-        type: string
-      email:
-        type: string
-      formula_id:
-        type: string
-      full_name:
-        type: string
-      gender:
-        type: string
-      id:
-        type: string
-      phone_number:
-        type: string
-      role:
-        $ref: '#/definitions/entities.UserRole'
-      updated_at:
-        type: string
-    type: object
   entities.UserRole:
     enum:
     - admin
@@ -177,6 +152,47 @@ definitions:
     - RoleDoctor
     - RoleReceptionist
     - RoleClient
+  handlers.CreateUserRequest:
+    properties:
+      address:
+        type: string
+      birth_date:
+        description: Accepts DD.MM.YYYY format
+        type: string
+      email:
+        type: string
+      full_name:
+        type: string
+      gender:
+        type: string
+      password:
+        type: string
+      phone_number:
+        type: string
+      role:
+        $ref: '#/definitions/entities.UserRole'
+    required:
+    - full_name
+    - role
+    type: object
+  handlers.UpdateUserRequest:
+    properties:
+      address:
+        type: string
+      birth_date:
+        description: Accepts DD.MM.YYYY format
+        type: string
+      email:
+        type: string
+      full_name:
+        type: string
+      gender:
+        type: string
+      phone_number:
+        type: string
+      role:
+        $ref: '#/definitions/entities.UserRole'
+    type: object
   response.StandardResponse:
     properties:
       data: {}
@@ -1162,14 +1178,16 @@ paths:
     post:
       consumes:
       - application/json
-      description: Create a new user with the provided details
+      description: Create a new user with the provided details. BirthDate should be
+        in DD.MM.YYYY format (e.g., 24.06.2003). CreatedAt and UpdatedAt are automatically
+        set.
       parameters:
       - description: User data
         in: body
         name: user
         required: true
         schema:
-          $ref: '#/definitions/entities.User'
+          $ref: '#/definitions/handlers.CreateUserRequest'
       produces:
       - application/json
       responses:
@@ -1250,7 +1268,8 @@ paths:
     put:
       consumes:
       - application/json
-      description: Update a user with the provided details
+      description: Update a user with the provided details. BirthDate should be in
+        DD.MM.YYYY format (e.g., 24.06.2003). UpdatedAt is automatically set.
       parameters:
       - description: User ID
         in: path
@@ -1262,7 +1281,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/entities.User'
+          $ref: '#/definitions/handlers.UpdateUserRequest'
       produces:
       - application/json
       responses:
@@ -1272,6 +1291,10 @@ paths:
             $ref: '#/definitions/response.StandardResponse'
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+        "404":
+          description: Not Found
           schema:
             $ref: '#/definitions/response.StandardResponse'
         "500":

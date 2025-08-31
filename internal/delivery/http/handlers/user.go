@@ -3,6 +3,8 @@ package handlers
 import (
 	"net/http"
 	"strconv"
+	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/whtvrr/Dental_Backend/internal/delivery/http/response"
@@ -15,6 +17,27 @@ type UserHandler struct {
 	userUseCase *usecases.UserUseCase
 }
 
+type CreateUserRequest struct {
+	Email       *string            `json:"email,omitempty"`
+	Password    *string            `json:"password,omitempty"`
+	Role        entities.UserRole  `json:"role" binding:"required"`
+	FullName    string             `json:"full_name" binding:"required"`
+	PhoneNumber *string            `json:"phone_number,omitempty"`
+	Address     *string            `json:"address,omitempty"`
+	Gender      *string            `json:"gender,omitempty"`
+	BirthDate   *string            `json:"birth_date,omitempty"` // Accepts DD.MM.YYYY format
+}
+
+type UpdateUserRequest struct {
+	Email       *string            `json:"email,omitempty"`
+	Role        *entities.UserRole `json:"role,omitempty"`
+	FullName    *string            `json:"full_name,omitempty"`
+	PhoneNumber *string            `json:"phone_number,omitempty"`
+	Address     *string            `json:"address,omitempty"`
+	Gender      *string            `json:"gender,omitempty"`
+	BirthDate   *string            `json:"birth_date,omitempty"` // Accepts DD.MM.YYYY format
+}
+
 func NewUserHandler(userUseCase *usecases.UserUseCase) *UserHandler {
 	return &UserHandler{
 		userUseCase: userUseCase,
@@ -23,21 +46,46 @@ func NewUserHandler(userUseCase *usecases.UserUseCase) *UserHandler {
 
 // CreateUser godoc
 // @Summary Create a new user
-// @Description Create a new user with the provided details
+// @Description Create a new user with the provided details. BirthDate should be in DD.MM.YYYY format (e.g., 24.06.2003). CreatedAt and UpdatedAt are automatically set.
 // @Tags users
 // @Accept json
 // @Produce json
 // @Security BearerAuth
-// @Param user body entities.User true "User data"
+// @Param user body CreateUserRequest true "User data"
 // @Success 201 {object} response.StandardResponse
 // @Failure 400 {object} response.StandardResponse "Bad Request"
 // @Failure 500 {object} response.StandardResponse "Internal Server Error"
 // @Router /users [post]
 func (h *UserHandler) CreateUser(c *gin.Context) {
-	var user entities.User
-	if err := c.ShouldBindJSON(&user); err != nil {
+	var req CreateUserRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, response.BadRequest(err.Error()))
 		return
+	}
+
+	// Convert request to user entity
+	user := entities.User{
+		Email:       req.Email,
+		Role:        req.Role,
+		FullName:    req.FullName,
+		PhoneNumber: req.PhoneNumber,
+		Address:     req.Address,
+		Gender:      req.Gender,
+	}
+
+	// Parse birth date if provided
+	if req.BirthDate != nil && strings.TrimSpace(*req.BirthDate) != "" {
+		birthDate, err := time.Parse("02.01.2006", strings.TrimSpace(*req.BirthDate))
+		if err != nil {
+			c.JSON(http.StatusBadRequest, response.BadRequest("invalid birth date format, expected DD.MM.YYYY (e.g., 24.06.2003)"))
+			return
+		}
+		user.BirthDate = &birthDate
+	}
+
+	// Handle password for staff users
+	if req.Password != nil && strings.TrimSpace(*req.Password) != "" {
+		user.PasswordHash = req.Password // Will be hashed in usecase
 	}
 
 	if err := h.userUseCase.CreateUser(c.Request.Context(), &user); err != nil {
@@ -78,15 +126,16 @@ func (h *UserHandler) GetUser(c *gin.Context) {
 
 // UpdateUser godoc
 // @Summary Update an existing user
-// @Description Update a user with the provided details
+// @Description Update a user with the provided details. BirthDate should be in DD.MM.YYYY format (e.g., 24.06.2003). UpdatedAt is automatically set.
 // @Tags users
 // @Accept json
 // @Produce json
 // @Security BearerAuth
 // @Param id path string true "User ID"
-// @Param user body entities.User true "Updated user data"
+// @Param user body UpdateUserRequest true "Updated user data"
 // @Success 200 {object} response.StandardResponse
 // @Failure 400 {object} response.StandardResponse "Bad Request"
+// @Failure 404 {object} response.StandardResponse "Not Found"
 // @Failure 500 {object} response.StandardResponse "Internal Server Error"
 // @Router /users/{id} [put]
 func (h *UserHandler) UpdateUser(c *gin.Context) {
@@ -97,12 +146,49 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 		return
 	}
 
-	var user entities.User
-	if err := c.ShouldBindJSON(&user); err != nil {
+	var req UpdateUserRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, response.BadRequest(err.Error()))
 		return
 	}
-	user.ID = id
+
+	// Get existing user to preserve CreatedAt and other fields
+	existingUser, err := h.userUseCase.GetUser(c.Request.Context(), id)
+	if err != nil {
+		c.JSON(http.StatusNotFound, response.Error(http.StatusNotFound, "user not found"))
+		return
+	}
+
+	// Update only provided fields
+	user := *existingUser
+	if req.Email != nil {
+		user.Email = req.Email
+	}
+	if req.Role != nil {
+		user.Role = *req.Role
+	}
+	if req.FullName != nil {
+		user.FullName = *req.FullName
+	}
+	if req.PhoneNumber != nil {
+		user.PhoneNumber = req.PhoneNumber
+	}
+	if req.Address != nil {
+		user.Address = req.Address
+	}
+	if req.Gender != nil {
+		user.Gender = req.Gender
+	}
+
+	// Parse birth date if provided
+	if req.BirthDate != nil && strings.TrimSpace(*req.BirthDate) != "" {
+		birthDate, err := time.Parse("02.01.2006", strings.TrimSpace(*req.BirthDate))
+		if err != nil {
+			c.JSON(http.StatusBadRequest, response.BadRequest("invalid birth date format, expected DD.MM.YYYY (e.g., 24.06.2003)"))
+			return
+		}
+		user.BirthDate = &birthDate
+	}
 
 	if err := h.userUseCase.UpdateUser(c.Request.Context(), &user); err != nil {
 		c.JSON(http.StatusInternalServerError, response.InternalServerError(err.Error()))

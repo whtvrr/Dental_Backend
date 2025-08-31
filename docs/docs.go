@@ -1436,7 +1436,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Create a new user with the provided details",
+                "description": "Create a new user with the provided details. BirthDate should be in DD.MM.YYYY format (e.g., 24.06.2003). CreatedAt and UpdatedAt are automatically set.",
                 "consumes": [
                     "application/json"
                 ],
@@ -1454,7 +1454,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/entities.User"
+                            "$ref": "#/definitions/handlers.CreateUserRequest"
                         }
                     }
                 ],
@@ -1690,7 +1690,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Update a user with the provided details",
+                "description": "Update a user with the provided details. BirthDate should be in DD.MM.YYYY format (e.g., 24.06.2003). UpdatedAt is automatically set.",
                 "consumes": [
                     "application/json"
                 ],
@@ -1715,7 +1715,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/entities.User"
+                            "$ref": "#/definitions/handlers.UpdateUserRequest"
                         }
                     }
                 ],
@@ -1728,6 +1728,12 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.StandardResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/response.StandardResponse"
                         }
@@ -1995,44 +2001,6 @@ const docTemplate = `{
                 }
             }
         },
-        "entities.User": {
-            "type": "object",
-            "properties": {
-                "address": {
-                    "type": "string"
-                },
-                "birth_date": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "formula_id": {
-                    "type": "string"
-                },
-                "full_name": {
-                    "type": "string"
-                },
-                "gender": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "phone_number": {
-                    "type": "string"
-                },
-                "role": {
-                    "$ref": "#/definitions/entities.UserRole"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
         "entities.UserRole": {
             "type": "string",
             "enum": [
@@ -2047,6 +2015,67 @@ const docTemplate = `{
                 "RoleReceptionist",
                 "RoleClient"
             ]
+        },
+        "handlers.CreateUserRequest": {
+            "type": "object",
+            "required": [
+                "full_name",
+                "role"
+            ],
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "birth_date": {
+                    "description": "Accepts DD.MM.YYYY format",
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "full_name": {
+                    "type": "string"
+                },
+                "gender": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "phone_number": {
+                    "type": "string"
+                },
+                "role": {
+                    "$ref": "#/definitions/entities.UserRole"
+                }
+            }
+        },
+        "handlers.UpdateUserRequest": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "birth_date": {
+                    "description": "Accepts DD.MM.YYYY format",
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "full_name": {
+                    "type": "string"
+                },
+                "gender": {
+                    "type": "string"
+                },
+                "phone_number": {
+                    "type": "string"
+                },
+                "role": {
+                    "$ref": "#/definitions/entities.UserRole"
+                }
+            }
         },
         "response.StandardResponse": {
             "type": "object",

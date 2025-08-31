@@ -176,21 +176,3 @@ func (h *ComplaintHandler) ListComplaints(c *gin.Context) {
 	c.JSON(http.StatusOK, response.OK("Complaints retrieved successfully", gin.H{"complaints": complaints}))
 }
 
-// GetActiveComplaints godoc
-// @Summary Get all active complaints
-// @Description Get a list of all active complaints
-// @Tags complaints
-// @Produce json
-// @Security BearerAuth
-// @Success 200 {object} response.StandardResponse
-// @Failure 500 {object} response.StandardResponse "Internal Server Error"
-// @Router /complaints/active [get]
-func (h *ComplaintHandler) GetActiveComplaints(c *gin.Context) {
-	complaints, err := h.complaintUseCase.GetActiveComplaints(c.Request.Context())
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, response.InternalServerError(err.Error()))
-		return
-	}
-
-	c.JSON(http.StatusOK, response.OK("Active complaints retrieved successfully", gin.H{"complaints": complaints}))
-}

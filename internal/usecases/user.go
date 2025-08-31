@@ -91,6 +91,28 @@ func (uc *UserUseCase) GetDoctors(ctx context.Context) ([]*entities.User, error)
 	return uc.userRepo.GetByRole(ctx, entities.RoleDoctor)
 }
 
+func (uc *UserUseCase) GetDoctorsWithPagination(ctx context.Context, offset, limit int) ([]*entities.User, error) {
+	return uc.userRepo.GetByRoleWithPagination(ctx, entities.RoleDoctor, offset, limit)
+}
+
 func (uc *UserUseCase) GetClients(ctx context.Context) ([]*entities.User, error) {
 	return uc.userRepo.GetByRole(ctx, entities.RoleClient)
+}
+
+func (uc *UserUseCase) GetStaff(ctx context.Context) ([]*entities.User, error) {
+	doctors, err := uc.userRepo.GetByRole(ctx, entities.RoleDoctor)
+	if err != nil {
+		return nil, err
+	}
+	
+	receptionists, err := uc.userRepo.GetByRole(ctx, entities.RoleReceptionist)
+	if err != nil {
+		return nil, err
+	}
+	
+	staff := make([]*entities.User, 0, len(doctors)+len(receptionists))
+	staff = append(staff, doctors...)
+	staff = append(staff, receptionists...)
+	
+	return staff, nil
 }

@@ -59,8 +59,6 @@ definitions:
         type: string
       id:
         type: string
-      is_active:
-        type: boolean
       title:
         type: string
       updated_at:
@@ -784,25 +782,6 @@ paths:
       summary: Update an existing complaint
       tags:
       - complaints
-  /complaints/active:
-    get:
-      description: Get a list of all active complaints
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.StandardResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/response.StandardResponse'
-      security:
-      - BearerAuth: []
-      summary: Get all active complaints
-      tags:
-      - complaints
   /formulas/{id}:
     get:
       description: Get a specific dental formula by its ID
@@ -1021,12 +1000,27 @@ paths:
       - statuses
   /statuses/diagnosis:
     get:
-      description: Get all statuses of diagnosis type
+      description: Get paginated list of diagnosis statuses
+      parameters:
+      - default: 0
+        description: Offset for pagination
+        in: query
+        name: offset
+        type: integer
+      - default: 10
+        description: Limit for pagination
+        in: query
+        name: limit
+        type: integer
       produces:
       - application/json
       responses:
         "200":
           description: OK
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+        "400":
+          description: Bad Request
           schema:
             $ref: '#/definitions/response.StandardResponse'
         "500":
@@ -1035,17 +1029,32 @@ paths:
             $ref: '#/definitions/response.StandardResponse'
       security:
       - BearerAuth: []
-      summary: Get all diagnosis statuses
+      summary: Get all diagnosis statuses with pagination
       tags:
       - statuses
   /statuses/tooth:
     get:
-      description: Get all statuses of tooth type
+      description: Get paginated list of tooth statuses
+      parameters:
+      - default: 0
+        description: Offset for pagination
+        in: query
+        name: offset
+        type: integer
+      - default: 10
+        description: Limit for pagination
+        in: query
+        name: limit
+        type: integer
       produces:
       - application/json
       responses:
         "200":
           description: OK
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+        "400":
+          description: Bad Request
           schema:
             $ref: '#/definitions/response.StandardResponse'
         "500":
@@ -1054,17 +1063,32 @@ paths:
             $ref: '#/definitions/response.StandardResponse'
       security:
       - BearerAuth: []
-      summary: Get all tooth statuses
+      summary: Get all tooth statuses with pagination
       tags:
       - statuses
   /statuses/treatment:
     get:
-      description: Get all statuses of treatment type
+      description: Get paginated list of treatment statuses
+      parameters:
+      - default: 0
+        description: Offset for pagination
+        in: query
+        name: offset
+        type: integer
+      - default: 10
+        description: Limit for pagination
+        in: query
+        name: limit
+        type: integer
       produces:
       - application/json
       responses:
         "200":
           description: OK
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+        "400":
+          description: Bad Request
           schema:
             $ref: '#/definitions/response.StandardResponse'
         "500":
@@ -1073,7 +1097,7 @@ paths:
             $ref: '#/definitions/response.StandardResponse'
       security:
       - BearerAuth: []
-      summary: Get all treatment statuses
+      summary: Get all treatment statuses with pagination
       tags:
       - statuses
   /statuses/type/{type}:
@@ -1280,7 +1304,41 @@ paths:
       - users
   /users/doctors:
     get:
-      description: Get a list of all users with doctor role
+      description: Get a paginated list of all users with doctor role
+      parameters:
+      - default: 0
+        description: Offset for pagination
+        in: query
+        name: offset
+        type: integer
+      - default: 10
+        description: Limit for pagination
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+      security:
+      - BearerAuth: []
+      summary: Get all doctors with pagination
+      tags:
+      - users
+  /users/staff:
+    get:
+      description: Get a list of all users with doctor and receptionist roles
       produces:
       - application/json
       responses:
@@ -1294,7 +1352,7 @@ paths:
             $ref: '#/definitions/response.StandardResponse'
       security:
       - BearerAuth: []
-      summary: Get all doctors
+      summary: Get all staff members
       tags:
       - users
 schemes:

@@ -84,26 +84,6 @@ func (r *complaintRepository) List(ctx context.Context, offset, limit int) ([]*e
 	return complaints, cursor.Err()
 }
 
-func (r *complaintRepository) GetActive(ctx context.Context) ([]*entities.Complaint, error) {
-	opts := options.Find().SetSort(bson.D{{Key: "title", Value: 1}})
-	cursor, err := r.collection.Find(ctx, bson.M{"is_active": true}, opts)
-	if err != nil {
-		return nil, err
-	}
-	defer cursor.Close(ctx)
-	
-	var complaints []*entities.Complaint
-	for cursor.Next(ctx) {
-		var complaint entities.Complaint
-		if err := cursor.Decode(&complaint); err != nil {
-			return nil, err
-		}
-		complaints = append(complaints, &complaint)
-	}
-	
-	return complaints, cursor.Err()
-}
-
 func (r *complaintRepository) GetByCategory(ctx context.Context, category string) ([]*entities.Complaint, error) {
 	opts := options.Find().SetSort(bson.D{{Key: "title", Value: 1}})
 	cursor, err := r.collection.Find(ctx, bson.M{"category": category}, opts)

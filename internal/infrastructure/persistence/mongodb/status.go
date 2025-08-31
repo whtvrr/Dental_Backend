@@ -128,3 +128,32 @@ func (r *statusRepository) GetActiveByType(ctx context.Context, statusType entit
 	
 	return statuses, cursor.Err()
 }
+
+func (r *statusRepository) GetActiveByTypeWithPagination(ctx context.Context, statusType entities.StatusType, offset, limit int) ([]*entities.Status, error) {
+	filter := bson.M{
+		"type":      statusType,
+		"is_active": true,
+	}
+	
+	opts := options.Find()
+	opts.SetSkip(int64(offset))
+	opts.SetLimit(int64(limit))
+	opts.SetSort(bson.D{{Key: "title", Value: 1}})
+	
+	cursor, err := r.collection.Find(ctx, filter, opts)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+	
+	var statuses []*entities.Status
+	for cursor.Next(ctx) {
+		var status entities.Status
+		if err := cursor.Decode(&status); err != nil {
+			return nil, err
+		}
+		statuses = append(statuses, &status)
+	}
+	
+	return statuses, cursor.Err()
+}

@@ -13,6 +13,5 @@ type ComplaintRepository interface {
 	Update(ctx context.Context, complaint *entities.Complaint) error
 	Delete(ctx context.Context, id primitive.ObjectID) error
 	List(ctx context.Context, offset, limit int) ([]*entities.Complaint, error)
-	GetActive(ctx context.Context) ([]*entities.Complaint, error)
 	GetByCategory(ctx context.Context, category string) ([]*entities.Complaint, error)
 }

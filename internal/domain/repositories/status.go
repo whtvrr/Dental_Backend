@@ -15,4 +15,5 @@ type StatusRepository interface {
 	List(ctx context.Context, offset, limit int) ([]*entities.Status, error)
 	GetByType(ctx context.Context, statusType entities.StatusType) ([]*entities.Status, error)
 	GetActiveByType(ctx context.Context, statusType entities.StatusType) ([]*entities.Status, error)
+	GetActiveByTypeWithPagination(ctx context.Context, statusType entities.StatusType, offset, limit int) ([]*entities.Status, error)
 }

@@ -19,7 +19,6 @@ func NewComplaintUseCase(complaintRepo repositories.ComplaintRepository) *Compla
 }
 
 func (uc *ComplaintUseCase) CreateComplaint(ctx context.Context, complaint *entities.Complaint) error {
-	complaint.IsActive = true
 	return uc.complaintRepo.Create(ctx, complaint)
 }
 
@@ -37,10 +36,6 @@ func (uc *ComplaintUseCase) DeleteComplaint(ctx context.Context, id primitive.Ob
 
 func (uc *ComplaintUseCase) ListComplaints(ctx context.Context, offset, limit int) ([]*entities.Complaint, error) {
 	return uc.complaintRepo.List(ctx, offset, limit)
-}
-
-func (uc *ComplaintUseCase) GetActiveComplaints(ctx context.Context) ([]*entities.Complaint, error) {
-	return uc.complaintRepo.GetActive(ctx)
 }
 
 func (uc *ComplaintUseCase) GetComplaintsByCategory(ctx context.Context, category string) ([]*entities.Complaint, error) {

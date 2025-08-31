@@ -15,4 +15,5 @@ type UserRepository interface {
 	Delete(ctx context.Context, id primitive.ObjectID) error
 	List(ctx context.Context, offset, limit int) ([]*entities.User, error)
 	GetByRole(ctx context.Context, role entities.UserRole) ([]*entities.User, error)
+	GetByRoleWithPagination(ctx context.Context, role entities.UserRole, offset, limit int) ([]*entities.User, error)
 }

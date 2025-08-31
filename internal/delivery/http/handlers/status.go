@@ -199,16 +199,34 @@ func (h *StatusHandler) GetStatusesByType(c *gin.Context) {
 }
 
 // GetDiagnosisStatuses godoc
-// @Summary Get all diagnosis statuses
-// @Description Get all statuses of diagnosis type
+// @Summary Get all diagnosis statuses with pagination
+// @Description Get paginated list of diagnosis statuses
 // @Tags statuses
 // @Produce json
 // @Security BearerAuth
+// @Param offset query int false "Offset for pagination" default(0)
+// @Param limit query int false "Limit for pagination" default(10)
 // @Success 200 {object} response.StandardResponse
+// @Failure 400 {object} response.StandardResponse "Bad Request"
 // @Failure 500 {object} response.StandardResponse "Internal Server Error"
 // @Router /statuses/diagnosis [get]
 func (h *StatusHandler) GetDiagnosisStatuses(c *gin.Context) {
-	statuses, err := h.statusUseCase.GetDiagnosisStatuses(c.Request.Context())
+	offsetStr := c.DefaultQuery("offset", "0")
+	limitStr := c.DefaultQuery("limit", "10")
+
+	offset, err := strconv.Atoi(offsetStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, response.BadRequest("invalid offset"))
+		return
+	}
+
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, response.BadRequest("invalid limit"))
+		return
+	}
+
+	statuses, err := h.statusUseCase.GetDiagnosisStatusesWithPagination(c.Request.Context(), offset, limit)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, response.InternalServerError(err.Error()))
 		return
@@ -218,16 +236,34 @@ func (h *StatusHandler) GetDiagnosisStatuses(c *gin.Context) {
 }
 
 // GetTreatmentStatuses godoc
-// @Summary Get all treatment statuses
-// @Description Get all statuses of treatment type
+// @Summary Get all treatment statuses with pagination
+// @Description Get paginated list of treatment statuses
 // @Tags statuses
 // @Produce json
 // @Security BearerAuth
+// @Param offset query int false "Offset for pagination" default(0)
+// @Param limit query int false "Limit for pagination" default(10)
 // @Success 200 {object} response.StandardResponse
+// @Failure 400 {object} response.StandardResponse "Bad Request"
 // @Failure 500 {object} response.StandardResponse "Internal Server Error"
 // @Router /statuses/treatment [get]
 func (h *StatusHandler) GetTreatmentStatuses(c *gin.Context) {
-	statuses, err := h.statusUseCase.GetTreatmentStatuses(c.Request.Context())
+	offsetStr := c.DefaultQuery("offset", "0")
+	limitStr := c.DefaultQuery("limit", "10")
+
+	offset, err := strconv.Atoi(offsetStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, response.BadRequest("invalid offset"))
+		return
+	}
+
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, response.BadRequest("invalid limit"))
+		return
+	}
+
+	statuses, err := h.statusUseCase.GetTreatmentStatusesWithPagination(c.Request.Context(), offset, limit)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, response.InternalServerError(err.Error()))
 		return
@@ -237,16 +273,34 @@ func (h *StatusHandler) GetTreatmentStatuses(c *gin.Context) {
 }
 
 // GetToothStatuses godoc
-// @Summary Get all tooth statuses
-// @Description Get all statuses of tooth type
+// @Summary Get all tooth statuses with pagination
+// @Description Get paginated list of tooth statuses
 // @Tags statuses
 // @Produce json
 // @Security BearerAuth
+// @Param offset query int false "Offset for pagination" default(0)
+// @Param limit query int false "Limit for pagination" default(10)
 // @Success 200 {object} response.StandardResponse
+// @Failure 400 {object} response.StandardResponse "Bad Request"
 // @Failure 500 {object} response.StandardResponse "Internal Server Error"
 // @Router /statuses/tooth [get]
 func (h *StatusHandler) GetToothStatuses(c *gin.Context) {
-	statuses, err := h.statusUseCase.GetToothStatuses(c.Request.Context())
+	offsetStr := c.DefaultQuery("offset", "0")
+	limitStr := c.DefaultQuery("limit", "10")
+
+	offset, err := strconv.Atoi(offsetStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, response.BadRequest("invalid offset"))
+		return
+	}
+
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, response.BadRequest("invalid limit"))
+		return
+	}
+
+	statuses, err := h.statusUseCase.GetToothStatusesWithPagination(c.Request.Context(), offset, limit)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, response.InternalServerError(err.Error()))
 		return

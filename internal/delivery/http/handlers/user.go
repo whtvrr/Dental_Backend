@@ -177,16 +177,34 @@ func (h *UserHandler) ListUsers(c *gin.Context) {
 }
 
 // GetDoctors godoc
-// @Summary Get all doctors
-// @Description Get a list of all users with doctor role
+// @Summary Get all doctors with pagination
+// @Description Get a paginated list of all users with doctor role
 // @Tags users
 // @Produce json
 // @Security BearerAuth
+// @Param offset query int false "Offset for pagination" default(0)
+// @Param limit query int false "Limit for pagination" default(10)
 // @Success 200 {object} response.StandardResponse
+// @Failure 400 {object} response.StandardResponse "Bad Request"
 // @Failure 500 {object} response.StandardResponse "Internal Server Error"
 // @Router /users/doctors [get]
 func (h *UserHandler) GetDoctors(c *gin.Context) {
-	doctors, err := h.userUseCase.GetDoctors(c.Request.Context())
+	offsetStr := c.DefaultQuery("offset", "0")
+	limitStr := c.DefaultQuery("limit", "10")
+
+	offset, err := strconv.Atoi(offsetStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, response.BadRequest("invalid offset"))
+		return
+	}
+
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, response.BadRequest("invalid limit"))
+		return
+	}
+
+	doctors, err := h.userUseCase.GetDoctorsWithPagination(c.Request.Context(), offset, limit)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, response.InternalServerError(err.Error()))
 		return
@@ -212,4 +230,23 @@ func (h *UserHandler) GetClients(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, response.OK("Clients retrieved successfully", gin.H{"clients": clients}))
+}
+
+// GetStaff godoc
+// @Summary Get all staff members
+// @Description Get a list of all users with doctor and receptionist roles
+// @Tags users
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} response.StandardResponse
+// @Failure 500 {object} response.StandardResponse "Internal Server Error"
+// @Router /users/staff [get]
+func (h *UserHandler) GetStaff(c *gin.Context) {
+	staff, err := h.userUseCase.GetStaff(c.Request.Context())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, response.InternalServerError(err.Error()))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.OK("Staff retrieved successfully", gin.H{"staff": staff}))
 }

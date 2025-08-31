@@ -58,3 +58,15 @@ func (uc *StatusUseCase) GetTreatmentStatuses(ctx context.Context) ([]*entities.
 func (uc *StatusUseCase) GetToothStatuses(ctx context.Context) ([]*entities.Status, error) {
 	return uc.statusRepo.GetActiveByType(ctx, entities.StatusTypeTooth)
 }
+
+func (uc *StatusUseCase) GetDiagnosisStatusesWithPagination(ctx context.Context, offset, limit int) ([]*entities.Status, error) {
+	return uc.statusRepo.GetActiveByTypeWithPagination(ctx, entities.StatusTypeDiagnosis, offset, limit)
+}
+
+func (uc *StatusUseCase) GetTreatmentStatusesWithPagination(ctx context.Context, offset, limit int) ([]*entities.Status, error) {
+	return uc.statusRepo.GetActiveByTypeWithPagination(ctx, entities.StatusTypeTreatment, offset, limit)
+}
+
+func (uc *StatusUseCase) GetToothStatusesWithPagination(ctx context.Context, offset, limit int) ([]*entities.Status, error) {
+	return uc.statusRepo.GetActiveByTypeWithPagination(ctx, entities.StatusTypeTooth, offset, limit)
+}

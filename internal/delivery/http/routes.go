@@ -46,6 +46,7 @@ func SetupRoutes(router *gin.Engine, h *Handlers, authMiddleware *middleware.Aut
 			users.GET("/:id", authMiddleware.RequireStaff(), h.User.GetUser)
 			users.PUT("/:id", authMiddleware.RequireStaff(), h.User.UpdateUser)
 			users.GET("/doctors", authMiddleware.RequireStaff(), h.User.GetDoctors)
+			users.GET("/staff", authMiddleware.RequireStaff(), h.User.GetStaff)
 			users.GET("/clients", authMiddleware.RequireStaff(), h.User.GetClients)
 		}
 
@@ -96,7 +97,6 @@ func SetupRoutes(router *gin.Engine, h *Handlers, authMiddleware *middleware.Aut
 			// All staff: Can view complaints
 			complaints.GET("/:id", authMiddleware.RequireStaff(), h.Complaint.GetComplaint)
 			complaints.GET("", authMiddleware.RequireStaff(), h.Complaint.ListComplaints)
-			complaints.GET("/active", authMiddleware.RequireStaff(), h.Complaint.GetActiveComplaints)
 		}
 
 		// Formula routes with RBAC

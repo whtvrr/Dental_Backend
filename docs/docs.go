@@ -693,37 +693,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/complaints/active": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Get a list of all active complaints",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "complaints"
-                ],
-                "summary": "Get all active complaints",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.StandardResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/response.StandardResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/complaints/{id}": {
             "get": {
                 "security": [
@@ -1071,17 +1040,39 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Get all statuses of diagnosis type",
+                "description": "Get paginated list of diagnosis statuses",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "statuses"
                 ],
-                "summary": "Get all diagnosis statuses",
+                "summary": "Get all diagnosis statuses with pagination",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 0,
+                        "description": "Offset for pagination",
+                        "name": "offset",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Limit for pagination",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.StandardResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/response.StandardResponse"
                         }
@@ -1102,17 +1093,39 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Get all statuses of tooth type",
+                "description": "Get paginated list of tooth statuses",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "statuses"
                 ],
-                "summary": "Get all tooth statuses",
+                "summary": "Get all tooth statuses with pagination",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 0,
+                        "description": "Offset for pagination",
+                        "name": "offset",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Limit for pagination",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.StandardResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/response.StandardResponse"
                         }
@@ -1133,17 +1146,39 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Get all statuses of treatment type",
+                "description": "Get paginated list of treatment statuses",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "statuses"
                 ],
-                "summary": "Get all treatment statuses",
+                "summary": "Get all treatment statuses with pagination",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 0,
+                        "description": "Offset for pagination",
+                        "name": "offset",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Limit for pagination",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.StandardResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/response.StandardResponse"
                         }
@@ -1483,14 +1518,67 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Get a list of all users with doctor role",
+                "description": "Get a paginated list of all users with doctor role",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "users"
                 ],
-                "summary": "Get all doctors",
+                "summary": "Get all doctors with pagination",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 0,
+                        "description": "Offset for pagination",
+                        "name": "offset",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Limit for pagination",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.StandardResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.StandardResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.StandardResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/staff": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get a list of all users with doctor and receptionist roles",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get all staff members",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -1741,9 +1829,6 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "string"
-                },
-                "is_active": {
-                    "type": "boolean"
                 },
                 "title": {
                     "type": "string"
@@ -2031,6 +2116,8 @@ var SwaggerInfo = &swag.Spec{
 	Description:      "This is a dental clinic management system server.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
+	LeftDelim:        "{{",
+	RightDelim:       "}}",
 }
 
 func init() {

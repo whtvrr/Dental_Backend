@@ -116,3 +116,31 @@ func (uc *UserUseCase) GetStaff(ctx context.Context) ([]*entities.User, error) {
 	
 	return staff, nil
 }
+
+func (uc *UserUseCase) GetStaffWithPagination(ctx context.Context, offset, limit int) ([]*entities.User, error) {
+	doctors, err := uc.userRepo.GetByRoleWithPagination(ctx, entities.RoleDoctor, offset, limit)
+	if err != nil {
+		return nil, err
+	}
+	
+	// Adjust offset and limit for receptionists based on how many doctors we got
+	remainingLimit := limit - len(doctors)
+	receptionistOffset := 0
+	if offset > len(doctors) {
+		receptionistOffset = offset - len(doctors)
+	}
+	
+	if remainingLimit > 0 {
+		receptionists, err := uc.userRepo.GetByRoleWithPagination(ctx, entities.RoleReceptionist, receptionistOffset, remainingLimit)
+		if err != nil {
+			return nil, err
+		}
+		doctors = append(doctors, receptionists...)
+	}
+	
+	return doctors, nil
+}
+
+func (uc *UserUseCase) GetClientsWithPagination(ctx context.Context, offset, limit int) ([]*entities.User, error) {
+	return uc.userRepo.GetByRoleWithPagination(ctx, entities.RoleClient, offset, limit)
+}

@@ -1484,17 +1484,39 @@
                         "BearerAuth": []
                     }
                 ],
-                "description": "Get a list of all users with client role",
+                "description": "Get a paginated list of all users with client role",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "users"
                 ],
-                "summary": "Get all clients",
+                "summary": "Get all clients with pagination",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 0,
+                        "description": "Offset for pagination",
+                        "name": "offset",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Limit for pagination",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.StandardResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/response.StandardResponse"
                         }
@@ -1568,17 +1590,39 @@
                         "BearerAuth": []
                     }
                 ],
-                "description": "Get a list of all users with doctor and receptionist roles",
+                "description": "Get a paginated list of all users with doctor and receptionist roles",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "users"
                 ],
-                "summary": "Get all staff members",
+                "summary": "Get all staff members with pagination",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 0,
+                        "description": "Offset for pagination",
+                        "name": "offset",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Limit for pagination",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.StandardResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/response.StandardResponse"
                         }

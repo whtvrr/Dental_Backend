@@ -1285,12 +1285,27 @@ paths:
       - users
   /users/clients:
     get:
-      description: Get a list of all users with client role
+      description: Get a paginated list of all users with client role
+      parameters:
+      - default: 0
+        description: Offset for pagination
+        in: query
+        name: offset
+        type: integer
+      - default: 10
+        description: Limit for pagination
+        in: query
+        name: limit
+        type: integer
       produces:
       - application/json
       responses:
         "200":
           description: OK
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+        "400":
+          description: Bad Request
           schema:
             $ref: '#/definitions/response.StandardResponse'
         "500":
@@ -1299,7 +1314,7 @@ paths:
             $ref: '#/definitions/response.StandardResponse'
       security:
       - BearerAuth: []
-      summary: Get all clients
+      summary: Get all clients with pagination
       tags:
       - users
   /users/doctors:
@@ -1338,12 +1353,28 @@ paths:
       - users
   /users/staff:
     get:
-      description: Get a list of all users with doctor and receptionist roles
+      description: Get a paginated list of all users with doctor and receptionist
+        roles
+      parameters:
+      - default: 0
+        description: Offset for pagination
+        in: query
+        name: offset
+        type: integer
+      - default: 10
+        description: Limit for pagination
+        in: query
+        name: limit
+        type: integer
       produces:
       - application/json
       responses:
         "200":
           description: OK
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+        "400":
+          description: Bad Request
           schema:
             $ref: '#/definitions/response.StandardResponse'
         "500":
@@ -1352,7 +1383,7 @@ paths:
             $ref: '#/definitions/response.StandardResponse'
       security:
       - BearerAuth: []
-      summary: Get all staff members
+      summary: Get all staff members with pagination
       tags:
       - users
 schemes:

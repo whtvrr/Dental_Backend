@@ -18,14 +18,11 @@ type UserHandler struct {
 }
 
 type CreateUserRequest struct {
-	Email       *string            `json:"email,omitempty"`
-	Password    *string            `json:"password,omitempty"`
-	Role        entities.UserRole  `json:"role" binding:"required"`
-	FullName    string             `json:"full_name" binding:"required"`
-	PhoneNumber *string            `json:"phone_number,omitempty"`
-	Address     *string            `json:"address,omitempty"`
-	Gender      *string            `json:"gender,omitempty"`
-	BirthDate   *string            `json:"birth_date,omitempty"` // Accepts DD.MM.YYYY format
+	FullName    string  `json:"full_name" binding:"required"`
+	PhoneNumber *string `json:"phone_number,omitempty"`
+	Address     *string `json:"address,omitempty"`
+	Gender      *string `json:"gender,omitempty"`
+	BirthDate   *string `json:"birth_date,omitempty"` // Accepts DD.MM.YYYY format
 }
 
 type UpdateUserRequest struct {
@@ -45,8 +42,8 @@ func NewUserHandler(userUseCase *usecases.UserUseCase) *UserHandler {
 }
 
 // CreateUser godoc
-// @Summary Create a new user
-// @Description Create a new user with the provided details. BirthDate should be in DD.MM.YYYY format (e.g., 24.06.2003). CreatedAt and UpdatedAt are automatically set.
+// @Summary Create a new client user
+// @Description Create a new client user with the provided details. Users created via this endpoint are automatically set as clients. BirthDate should be in DD.MM.YYYY format (e.g., 24.06.2003). CreatedAt and UpdatedAt are automatically set.
 // @Tags users
 // @Accept json
 // @Produce json
@@ -63,10 +60,9 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 		return
 	}
 
-	// Convert request to user entity
+	// Convert request to user entity - automatically set as client
 	user := entities.User{
-		Email:       req.Email,
-		Role:        req.Role,
+		Role:        entities.RoleClient,
 		FullName:    req.FullName,
 		PhoneNumber: req.PhoneNumber,
 		Address:     req.Address,
@@ -81,11 +77,6 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 			return
 		}
 		user.BirthDate = &birthDate
-	}
-
-	// Handle password for staff users
-	if req.Password != nil && strings.TrimSpace(*req.Password) != "" {
-		user.PasswordHash = req.Password // Will be hashed in usecase
 	}
 
 	if err := h.userUseCase.CreateUser(c.Request.Context(), &user); err != nil {

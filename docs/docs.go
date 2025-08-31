@@ -1436,7 +1436,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Create a new user with the provided details. BirthDate should be in DD.MM.YYYY format (e.g., 24.06.2003). CreatedAt and UpdatedAt are automatically set.",
+                "description": "Create a new client user with the provided details. Users created via this endpoint are automatically set as clients. BirthDate should be in DD.MM.YYYY format (e.g., 24.06.2003). CreatedAt and UpdatedAt are automatically set.",
                 "consumes": [
                     "application/json"
                 ],
@@ -1446,7 +1446,7 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "Create a new user",
+                "summary": "Create a new client user",
                 "parameters": [
                     {
                         "description": "User data",
@@ -2019,8 +2019,7 @@ const docTemplate = `{
         "handlers.CreateUserRequest": {
             "type": "object",
             "required": [
-                "full_name",
-                "role"
+                "full_name"
             ],
             "properties": {
                 "address": {
@@ -2030,23 +2029,14 @@ const docTemplate = `{
                     "description": "Accepts DD.MM.YYYY format",
                     "type": "string"
                 },
-                "email": {
-                    "type": "string"
-                },
                 "full_name": {
                     "type": "string"
                 },
                 "gender": {
                     "type": "string"
                 },
-                "password": {
-                    "type": "string"
-                },
                 "phone_number": {
                     "type": "string"
-                },
-                "role": {
-                    "$ref": "#/definitions/entities.UserRole"
                 }
             }
         },

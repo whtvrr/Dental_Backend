@@ -159,21 +159,14 @@ definitions:
       birth_date:
         description: Accepts DD.MM.YYYY format
         type: string
-      email:
-        type: string
       full_name:
         type: string
       gender:
         type: string
-      password:
-        type: string
       phone_number:
         type: string
-      role:
-        $ref: '#/definitions/entities.UserRole'
     required:
     - full_name
-    - role
     type: object
   handlers.UpdateUserRequest:
     properties:
@@ -1178,8 +1171,9 @@ paths:
     post:
       consumes:
       - application/json
-      description: Create a new user with the provided details. BirthDate should be
-        in DD.MM.YYYY format (e.g., 24.06.2003). CreatedAt and UpdatedAt are automatically
+      description: Create a new client user with the provided details. Users created
+        via this endpoint are automatically set as clients. BirthDate should be in
+        DD.MM.YYYY format (e.g., 24.06.2003). CreatedAt and UpdatedAt are automatically
         set.
       parameters:
       - description: User data
@@ -1205,7 +1199,7 @@ paths:
             $ref: '#/definitions/response.StandardResponse'
       security:
       - BearerAuth: []
-      summary: Create a new user
+      summary: Create a new client user
       tags:
       - users
   /users/{id}:

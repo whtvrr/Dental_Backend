@@ -12,6 +12,20 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+type AppointmentCreateRequest struct {
+	DateTime        time.Time                  `json:"date_time" binding:"required"`
+	DoctorID        primitive.ObjectID         `json:"doctor_id" binding:"required"`
+	ClientID        primitive.ObjectID         `json:"client_id" binding:"required"`
+	DurationMinutes int                        `json:"duration_minutes" binding:"required"`
+	Status          entities.AppointmentStatus `json:"status,omitempty"`
+
+	// Optional medical fields for initial appointment
+	ComplaintID     *primitive.ObjectID `json:"complaint_id,omitempty"`
+	CustomComplaint *string             `json:"custom_complaint,omitempty"`
+	Anamnesis       *string             `json:"anamnesis,omitempty"`
+	Comment         *string             `json:"comment,omitempty"`
+}
+
 type AppointmentHandler struct {
 	appointmentUseCase *usecases.AppointmentUseCase
 }
@@ -28,19 +42,31 @@ func NewAppointmentHandler(appointmentUseCase *usecases.AppointmentUseCase) *App
 // @Tags appointments
 // @Accept json
 // @Produce json
-// @Param appointment body entities.Appointment true "Appointment data"
+// @Param appointment body AppointmentCreateRequest true "Appointment data"
 // @Success 201 {object} response.StandardResponse
 // @Failure 400 {object} response.StandardResponse "Bad Request"
 // @Failure 500 {object} response.StandardResponse "Internal Server Error"
 // @Router /appointments [post]
 func (h *AppointmentHandler) CreateAppointment(c *gin.Context) {
-	var appointment entities.Appointment
-	if err := c.ShouldBindJSON(&appointment); err != nil {
+	var req AppointmentCreateRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, response.BadRequest(err.Error()))
 		return
 	}
 
-	if err := h.appointmentUseCase.CreateAppointment(c.Request.Context(), &appointment); err != nil {
+	// Convert request to appointment entity
+	appointment := &entities.Appointment{
+		DateTime:        req.DateTime,
+		DoctorID:        req.DoctorID,
+		ClientID:        req.ClientID,
+		DurationMinutes: req.DurationMinutes,
+		ComplaintID:     req.ComplaintID,
+		CustomComplaint: req.CustomComplaint,
+		Anamnesis:       req.Anamnesis,
+		Comment:         req.Comment,
+	}
+
+	if err := h.appointmentUseCase.CreateAppointment(c.Request.Context(), appointment); err != nil {
 		c.JSON(http.StatusInternalServerError, response.InternalServerError(err.Error()))
 		return
 	}
@@ -267,7 +293,7 @@ func (h *AppointmentHandler) GetDoctorAppointments(c *gin.Context) {
 		return
 	}
 
-	to = to.Add(24 * time.Hour - time.Nanosecond)
+	to = to.Add(24*time.Hour - time.Nanosecond)
 
 	appointments, err := h.appointmentUseCase.GetDoctorAppointments(c.Request.Context(), doctorID, from, to)
 	if err != nil {

@@ -25,12 +25,12 @@ func NewAppointmentRepository(db *mongo.Database) repositories.AppointmentReposi
 func (r *appointmentRepository) Create(ctx context.Context, appointment *entities.Appointment) error {
 	appointment.CreatedAt = time.Now()
 	appointment.UpdatedAt = time.Now()
-	
+
 	result, err := r.collection.InsertOne(ctx, appointment)
 	if err != nil {
 		return err
 	}
-	
+
 	appointment.ID = result.InsertedID.(primitive.ObjectID)
 	return nil
 }
@@ -46,7 +46,7 @@ func (r *appointmentRepository) GetByID(ctx context.Context, id primitive.Object
 
 func (r *appointmentRepository) Update(ctx context.Context, appointment *entities.Appointment) error {
 	appointment.UpdatedAt = time.Now()
-	
+
 	_, err := r.collection.UpdateOne(
 		ctx,
 		bson.M{"_id": appointment.ID},
@@ -65,13 +65,13 @@ func (r *appointmentRepository) List(ctx context.Context, offset, limit int) ([]
 	opts.SetSkip(int64(offset))
 	opts.SetLimit(int64(limit))
 	opts.SetSort(bson.D{{Key: "date_time", Value: 1}})
-	
+
 	cursor, err := r.collection.Find(ctx, bson.M{}, opts)
 	if err != nil {
 		return nil, err
 	}
 	defer cursor.Close(ctx)
-	
+
 	var appointments []*entities.Appointment
 	for cursor.Next(ctx) {
 		var appointment entities.Appointment
@@ -80,7 +80,7 @@ func (r *appointmentRepository) List(ctx context.Context, offset, limit int) ([]
 		}
 		appointments = append(appointments, &appointment)
 	}
-	
+
 	return appointments, cursor.Err()
 }
 
@@ -92,14 +92,14 @@ func (r *appointmentRepository) GetByDoctorID(ctx context.Context, doctorID prim
 			"$lte": to,
 		},
 	}
-	
+
 	opts := options.Find().SetSort(bson.D{{Key: "date_time", Value: 1}})
 	cursor, err := r.collection.Find(ctx, filter, opts)
 	if err != nil {
 		return nil, err
 	}
 	defer cursor.Close(ctx)
-	
+
 	var appointments []*entities.Appointment
 	for cursor.Next(ctx) {
 		var appointment entities.Appointment
@@ -108,7 +108,7 @@ func (r *appointmentRepository) GetByDoctorID(ctx context.Context, doctorID prim
 		}
 		appointments = append(appointments, &appointment)
 	}
-	
+
 	return appointments, cursor.Err()
 }
 
@@ -119,7 +119,7 @@ func (r *appointmentRepository) GetByClientID(ctx context.Context, clientID prim
 		return nil, err
 	}
 	defer cursor.Close(ctx)
-	
+
 	var appointments []*entities.Appointment
 	for cursor.Next(ctx) {
 		var appointment entities.Appointment
@@ -128,7 +128,7 @@ func (r *appointmentRepository) GetByClientID(ctx context.Context, clientID prim
 		}
 		appointments = append(appointments, &appointment)
 	}
-	
+
 	return appointments, cursor.Err()
 }
 
@@ -139,14 +139,14 @@ func (r *appointmentRepository) GetByDateRange(ctx context.Context, from, to tim
 			"$lte": to,
 		},
 	}
-	
+
 	opts := options.Find().SetSort(bson.D{{Key: "date_time", Value: 1}})
 	cursor, err := r.collection.Find(ctx, filter, opts)
 	if err != nil {
 		return nil, err
 	}
 	defer cursor.Close(ctx)
-	
+
 	var appointments []*entities.Appointment
 	for cursor.Next(ctx) {
 		var appointment entities.Appointment
@@ -155,7 +155,7 @@ func (r *appointmentRepository) GetByDateRange(ctx context.Context, from, to tim
 		}
 		appointments = append(appointments, &appointment)
 	}
-	
+
 	return appointments, cursor.Err()
 }
 
@@ -166,7 +166,7 @@ func (r *appointmentRepository) GetByStatus(ctx context.Context, status entities
 		return nil, err
 	}
 	defer cursor.Close(ctx)
-	
+
 	var appointments []*entities.Appointment
 	for cursor.Next(ctx) {
 		var appointment entities.Appointment
@@ -175,6 +175,6 @@ func (r *appointmentRepository) GetByStatus(ctx context.Context, status entities
 		}
 		appointments = append(appointments, &appointment)
 	}
-	
+
 	return appointments, cursor.Err()
 }

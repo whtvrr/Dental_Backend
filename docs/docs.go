@@ -1990,9 +1990,6 @@ const docTemplate = `{
                 "note": {
                     "type": "string"
                 },
-                "segment": {
-                    "type": "string"
-                },
                 "status_id": {
                     "type": "string"
                 },
@@ -2179,6 +2176,8 @@ var SwaggerInfo = &swag.Spec{
 	Description:      "This is a dental clinic management system server.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
+	LeftDelim:        "{{",
+	RightDelim:       "}}",
 }
 
 func init() {

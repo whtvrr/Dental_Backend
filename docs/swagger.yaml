@@ -133,8 +133,6 @@ definitions:
         type: string
       note:
         type: string
-      segment:
-        type: string
       status_id:
         type: string
       timestamp:

@@ -27,7 +27,6 @@ type ToothStatus struct {
 	AppointmentID primitive.ObjectID `bson:"appointment_id" json:"appointment_id"`
 	Timestamp     time.Time          `bson:"timestamp" json:"timestamp"`
 	Note          *string            `bson:"note,omitempty" json:"note,omitempty"`
-	Segment       *string            `bson:"segment,omitempty" json:"segment,omitempty"`
 }
 
 // Initialize a new formula with 32 teeth

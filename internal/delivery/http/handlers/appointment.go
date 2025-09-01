@@ -13,12 +13,11 @@ import (
 )
 
 type AppointmentCreateRequest struct {
-	DateTime        time.Time                  `json:"date_time" binding:"required"`
-	DoctorID        primitive.ObjectID         `json:"doctor_id" binding:"required"`
-	ClientID        primitive.ObjectID         `json:"client_id" binding:"required"`
-	DurationMinutes int                        `json:"duration_minutes" binding:"required"`
-	Status          entities.AppointmentStatus `json:"status,omitempty"`
-	Comment         *string                    `json:"comment,omitempty"`
+	DateTime        time.Time          `json:"date_time" binding:"required"`
+	DoctorID        primitive.ObjectID `json:"doctor_id" binding:"required"`
+	ClientID        primitive.ObjectID `json:"client_id" binding:"required"`
+	DurationMinutes int                `json:"duration_minutes" binding:"required"`
+	Comment         *string            `json:"comment,omitempty"`
 }
 
 type AppointmentHandler struct {
@@ -264,8 +263,8 @@ func (h *AppointmentHandler) ListAppointments(c *gin.Context) {
 // @Produce json
 // @Security BearerAuth
 // @Param doctorId path string true "Doctor ID"
-// @Param from query string true "Start date (YYYY-MM-DD)"
-// @Param to query string true "End date (YYYY-MM-DD)"
+// @Param from query string true "Start date (DD.MM.YYYY)"
+// @Param to query string true "End date (DD.MM.YYYY)"
 // @Success 200 {object} response.StandardResponse
 // @Failure 400 {object} response.StandardResponse "Bad Request"
 // @Failure 500 {object} response.StandardResponse "Internal Server Error"
@@ -281,15 +280,15 @@ func (h *AppointmentHandler) GetDoctorAppointments(c *gin.Context) {
 	fromStr := c.Query("from")
 	toStr := c.Query("to")
 
-	from, err := time.Parse("2006-01-02", fromStr)
+	from, err := time.Parse("02.01.2006", fromStr)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, response.BadRequest("invalid from date format (YYYY-MM-DD)"))
+		c.JSON(http.StatusBadRequest, response.BadRequest("invalid from date format (DD.MM.YYYY)"))
 		return
 	}
 
-	to, err := time.Parse("2006-01-02", toStr)
+	to, err := time.Parse("02.01.2006", toStr)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, response.BadRequest("invalid to date format (YYYY-MM-DD)"))
+		c.JSON(http.StatusBadRequest, response.BadRequest("invalid to date format (DD.MM.YYYY)"))
 		return
 	}
 

@@ -37,7 +37,7 @@ func (uc *AppointmentUseCase) CreateAppointment(ctx context.Context, appointment
 	if !doctor.IsDoctor() {
 		return errors.New("user is not a doctor")
 	}
-	
+
 	// Validate client exists
 	client, err := uc.userRepo.GetByID(ctx, appointment.ClientID)
 	if err != nil {
@@ -46,7 +46,7 @@ func (uc *AppointmentUseCase) CreateAppointment(ctx context.Context, appointment
 	if !client.IsClient() {
 		return errors.New("user is not a client")
 	}
-	
+
 	appointment.Status = entities.AppointmentStatusScheduled
 	return uc.appointmentRepo.Create(ctx, appointment)
 }
@@ -64,7 +64,7 @@ func (uc *AppointmentUseCase) CompleteAppointment(ctx context.Context, id primit
 	if err != nil {
 		return err
 	}
-	
+
 	// Update appointment with medical data
 	appointment.ComplaintID = medicalData.ComplaintID
 	appointment.CustomComplaint = medicalData.CustomComplaint
@@ -74,27 +74,27 @@ func (uc *AppointmentUseCase) CompleteAppointment(ctx context.Context, id primit
 	appointment.Comment = medicalData.Comment
 	appointment.Status = entities.AppointmentStatusCompleted
 	appointment.Formula = medicalData.Formula
-	
+
 	// Update client's formula if provided
 	if medicalData.Formula != nil {
 		client, err := uc.userRepo.GetByID(ctx, appointment.ClientID)
 		if err != nil {
 			return err
 		}
-		
+
 		if client.FormulaID != nil {
 			// Update the client's formula with the new state
 			medicalData.Formula.ID = *client.FormulaID
 			medicalData.Formula.UserID = appointment.ClientID
 			medicalData.Formula.UpdatedAt = time.Now()
-			
+
 			err := uc.formulaRepo.Update(ctx, medicalData.Formula)
 			if err != nil {
 				return err
 			}
 		}
 	}
-	
+
 	return uc.appointmentRepo.Update(ctx, appointment)
 }
 
@@ -103,7 +103,7 @@ func (uc *AppointmentUseCase) CancelAppointment(ctx context.Context, id primitiv
 	if err != nil {
 		return err
 	}
-	
+
 	appointment.Status = entities.AppointmentStatusCanceled
 	return uc.appointmentRepo.Update(ctx, appointment)
 }
@@ -129,11 +129,11 @@ func (uc *AppointmentUseCase) GetAppointmentsByDateRange(ctx context.Context, fr
 }
 
 type AppointmentMedicalData struct {
-	ComplaintID     *primitive.ObjectID     `json:"complaint_id,omitempty"`
-	CustomComplaint *string                 `json:"custom_complaint,omitempty"`
-	Anamnesis       *string                 `json:"anamnesis,omitempty"`
-	DiagnosisID     *primitive.ObjectID     `json:"diagnosis_id,omitempty"`
-	TreatmentID     *primitive.ObjectID     `json:"treatment_id,omitempty"`
-	Comment         *string                 `json:"comment,omitempty"`
-	Formula         *entities.Formula       `json:"formula,omitempty"`
+	ComplaintID     *primitive.ObjectID `json:"complaint_id,omitempty"`
+	CustomComplaint *string             `json:"custom_complaint,omitempty"`
+	Anamnesis       *string             `json:"anamnesis,omitempty"`
+	DiagnosisID     *primitive.ObjectID `json:"diagnosis_id,omitempty"`
+	TreatmentID     *primitive.ObjectID `json:"treatment_id,omitempty"`
+	Comment         *string             `json:"comment,omitempty"`
+	Formula         *entities.Formula   `json:"formula,omitempty"`
 }

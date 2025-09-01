@@ -301,6 +301,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/response.StandardResponse'
+      security:
+      - BearerAuth: []
       summary: List all appointments with pagination
       tags:
       - appointments
@@ -330,6 +332,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/response.StandardResponse'
+      security:
+      - BearerAuth: []
       summary: Create a new appointment
       tags:
       - appointments
@@ -357,6 +361,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/response.StandardResponse'
+      security:
+      - BearerAuth: []
       summary: Delete an appointment
       tags:
       - appointments
@@ -383,6 +389,8 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/response.StandardResponse'
+      security:
+      - BearerAuth: []
       summary: Get appointment by ID
       tags:
       - appointments
@@ -417,6 +425,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/response.StandardResponse'
+      security:
+      - BearerAuth: []
       summary: Update an existing appointment
       tags:
       - appointments
@@ -444,6 +454,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/response.StandardResponse'
+      security:
+      - BearerAuth: []
       summary: Cancel an appointment
       tags:
       - appointments
@@ -479,6 +491,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/response.StandardResponse'
+      security:
+      - BearerAuth: []
       summary: Complete an appointment with medical data
       tags:
       - appointments
@@ -506,6 +520,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/response.StandardResponse'
+      security:
+      - BearerAuth: []
       summary: Get appointments for a specific client
       tags:
       - appointments
@@ -543,6 +559,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/response.StandardResponse'
+      security:
+      - BearerAuth: []
       summary: Get appointments for a specific doctor
       tags:
       - appointments

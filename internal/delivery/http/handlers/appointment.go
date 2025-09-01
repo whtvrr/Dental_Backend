@@ -37,6 +37,7 @@ func NewAppointmentHandler(appointmentUseCase *usecases.AppointmentUseCase) *App
 // @Tags appointments
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param appointment body AppointmentCreateRequest true "Appointment data"
 // @Success 201 {object} response.StandardResponse
 // @Failure 400 {object} response.StandardResponse "Bad Request"
@@ -71,6 +72,7 @@ func (h *AppointmentHandler) CreateAppointment(c *gin.Context) {
 // @Description Get a specific appointment by its ID
 // @Tags appointments
 // @Produce json
+// @Security BearerAuth
 // @Param id path string true "Appointment ID"
 // @Success 200 {object} response.StandardResponse
 // @Failure 400 {object} response.StandardResponse "Bad Request"
@@ -99,6 +101,7 @@ func (h *AppointmentHandler) GetAppointment(c *gin.Context) {
 // @Tags appointments
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param id path string true "Appointment ID"
 // @Param appointment body entities.Appointment true "Updated appointment data"
 // @Success 200 {object} response.StandardResponse
@@ -134,6 +137,7 @@ func (h *AppointmentHandler) UpdateAppointment(c *gin.Context) {
 // @Tags appointments
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param id path string true "Appointment ID"
 // @Param medicalData body usecases.AppointmentMedicalData true "Medical data for appointment"
 // @Success 200 {object} response.StandardResponse
@@ -167,6 +171,7 @@ func (h *AppointmentHandler) CompleteAppointment(c *gin.Context) {
 // @Description Mark an appointment as canceled
 // @Tags appointments
 // @Produce json
+// @Security BearerAuth
 // @Param id path string true "Appointment ID"
 // @Success 200 {object} response.StandardResponse
 // @Failure 400 {object} response.StandardResponse "Bad Request"
@@ -193,6 +198,7 @@ func (h *AppointmentHandler) CancelAppointment(c *gin.Context) {
 // @Description Delete an appointment by its ID
 // @Tags appointments
 // @Produce json
+// @Security BearerAuth
 // @Param id path string true "Appointment ID"
 // @Success 200 {object} response.StandardResponse
 // @Failure 400 {object} response.StandardResponse "Bad Request"
@@ -219,6 +225,7 @@ func (h *AppointmentHandler) DeleteAppointment(c *gin.Context) {
 // @Description Get a paginated list of all appointments
 // @Tags appointments
 // @Produce json
+// @Security BearerAuth
 // @Param offset query int false "Offset for pagination" default(0)
 // @Param limit query int false "Limit for pagination" default(10)
 // @Success 200 {object} response.StandardResponse
@@ -255,6 +262,7 @@ func (h *AppointmentHandler) ListAppointments(c *gin.Context) {
 // @Description Get all appointments for a doctor within a date range
 // @Tags appointments
 // @Produce json
+// @Security BearerAuth
 // @Param doctorId path string true "Doctor ID"
 // @Param from query string true "Start date (YYYY-MM-DD)"
 // @Param to query string true "End date (YYYY-MM-DD)"
@@ -301,6 +309,7 @@ func (h *AppointmentHandler) GetDoctorAppointments(c *gin.Context) {
 // @Description Get all appointments for a specific client
 // @Tags appointments
 // @Produce json
+// @Security BearerAuth
 // @Param clientId path string true "Client ID"
 // @Success 200 {object} response.StandardResponse
 // @Failure 400 {object} response.StandardResponse "Bad Request"

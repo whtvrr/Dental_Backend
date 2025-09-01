@@ -17,6 +17,11 @@ const docTemplate = `{
     "paths": {
         "/appointments": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Get a paginated list of all appointments",
                 "produces": [
                     "application/json"
@@ -63,6 +68,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Create a new appointment with the provided details",
                 "consumes": [
                     "application/json"
@@ -109,6 +119,11 @@ const docTemplate = `{
         },
         "/appointments/client/{clientId}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Get all appointments for a specific client",
                 "produces": [
                     "application/json"
@@ -150,6 +165,11 @@ const docTemplate = `{
         },
         "/appointments/doctor/{doctorId}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Get all appointments for a doctor within a date range",
                 "produces": [
                     "application/json"
@@ -205,6 +225,11 @@ const docTemplate = `{
         },
         "/appointments/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Get a specific appointment by its ID",
                 "produces": [
                     "application/json"
@@ -244,6 +269,11 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Update an appointment with the provided details",
                 "consumes": [
                     "application/json"
@@ -295,6 +325,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Delete an appointment by its ID",
                 "produces": [
                     "application/json"
@@ -336,6 +371,11 @@ const docTemplate = `{
         },
         "/appointments/{id}/cancel": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Mark an appointment as canceled",
                 "produces": [
                     "application/json"
@@ -377,6 +417,11 @@ const docTemplate = `{
         },
         "/appointments/{id}/complete": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Mark an appointment as completed and update with medical information",
                 "consumes": [
                     "application/json"

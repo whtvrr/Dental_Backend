@@ -18,12 +18,7 @@ type AppointmentCreateRequest struct {
 	ClientID        primitive.ObjectID         `json:"client_id" binding:"required"`
 	DurationMinutes int                        `json:"duration_minutes" binding:"required"`
 	Status          entities.AppointmentStatus `json:"status,omitempty"`
-
-	// Optional medical fields for initial appointment
-	ComplaintID     *primitive.ObjectID `json:"complaint_id,omitempty"`
-	CustomComplaint *string             `json:"custom_complaint,omitempty"`
-	Anamnesis       *string             `json:"anamnesis,omitempty"`
-	Comment         *string             `json:"comment,omitempty"`
+	Comment         *string                    `json:"comment,omitempty"`
 }
 
 type AppointmentHandler struct {
@@ -60,9 +55,6 @@ func (h *AppointmentHandler) CreateAppointment(c *gin.Context) {
 		DoctorID:        req.DoctorID,
 		ClientID:        req.ClientID,
 		DurationMinutes: req.DurationMinutes,
-		ComplaintID:     req.ComplaintID,
-		CustomComplaint: req.CustomComplaint,
-		Anamnesis:       req.Anamnesis,
 		Comment:         req.Comment,
 	}
 

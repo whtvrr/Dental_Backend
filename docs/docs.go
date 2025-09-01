@@ -2022,20 +2022,10 @@ const docTemplate = `{
                 "duration_minutes"
             ],
             "properties": {
-                "anamnesis": {
-                    "type": "string"
-                },
                 "client_id": {
                     "type": "string"
                 },
                 "comment": {
-                    "type": "string"
-                },
-                "complaint_id": {
-                    "description": "Optional medical fields for initial appointment",
-                    "type": "string"
-                },
-                "custom_complaint": {
                     "type": "string"
                 },
                 "date_time": {
@@ -2215,6 +2205,8 @@ var SwaggerInfo = &swag.Spec{
 	Description:      "This is a dental clinic management system server.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
+	LeftDelim:        "{{",
+	RightDelim:       "}}",
 }
 
 func init() {

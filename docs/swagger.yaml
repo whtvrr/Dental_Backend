@@ -152,16 +152,9 @@ definitions:
     - RoleClient
   handlers.AppointmentCreateRequest:
     properties:
-      anamnesis:
-        type: string
       client_id:
         type: string
       comment:
-        type: string
-      complaint_id:
-        description: Optional medical fields for initial appointment
-        type: string
-      custom_complaint:
         type: string
       date_time:
         type: string

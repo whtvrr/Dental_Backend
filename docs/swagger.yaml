@@ -233,6 +233,8 @@ definitions:
     properties:
       anamnesis:
         type: string
+      client_id:
+        type: string
       comment:
         type: string
       complaint_id:
@@ -245,6 +247,8 @@ definitions:
         $ref: '#/definitions/entities.Formula'
       treatment_id:
         type: string
+    required:
+    - client_id
     type: object
   usecases.RefreshTokenRequest:
     properties:

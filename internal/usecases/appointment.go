@@ -73,26 +73,46 @@ func (uc *AppointmentUseCase) CompleteAppointment(ctx context.Context, id primit
 	appointment.TreatmentID = medicalData.TreatmentID
 	appointment.Comment = medicalData.Comment
 	appointment.Status = entities.AppointmentStatusCompleted
-	appointment.Formula = medicalData.Formula
 
-	// Update client's formula if provided
+	// Handle formula logic based on user's FormulaID field
 	if medicalData.Formula != nil {
-		client, err := uc.userRepo.GetByID(ctx, appointment.ClientID)
+		client, err := uc.userRepo.GetByID(ctx, medicalData.ClientID)
 		if err != nil {
 			return err
 		}
 
 		if client.FormulaID != nil {
-			// Update the client's formula with the new state
+			// Update existing formula
 			medicalData.Formula.ID = *client.FormulaID
-			medicalData.Formula.UserID = appointment.ClientID
+			medicalData.Formula.UserID = medicalData.ClientID
 			medicalData.Formula.UpdatedAt = time.Now()
 
 			err := uc.formulaRepo.Update(ctx, medicalData.Formula)
 			if err != nil {
 				return err
 			}
+		} else {
+			// Create new formula for the user
+			medicalData.Formula.UserID = medicalData.ClientID
+			medicalData.Formula.CreatedAt = time.Now()
+			medicalData.Formula.UpdatedAt = time.Now()
+
+			err := uc.formulaRepo.Create(ctx, medicalData.Formula)
+			if err != nil {
+				return err
+			}
+
+			// Update user's FormulaID
+			client.FormulaID = &medicalData.Formula.ID
+			client.UpdatedAt = time.Now()
+			err = uc.userRepo.Update(ctx, client)
+			if err != nil {
+				return err
+			}
 		}
+
+		// Set the formula in the appointment record
+		appointment.Formula = medicalData.Formula
 	}
 
 	return uc.appointmentRepo.Update(ctx, appointment)
@@ -135,5 +155,6 @@ type AppointmentMedicalData struct {
 	DiagnosisID     *primitive.ObjectID `json:"diagnosis_id,omitempty"`
 	TreatmentID     *primitive.ObjectID `json:"treatment_id,omitempty"`
 	Comment         *string             `json:"comment,omitempty"`
+	ClientID        primitive.ObjectID  `json:"client_id" binding:"required"`
 	Formula         *entities.Formula   `json:"formula,omitempty"`
 }

@@ -2178,8 +2178,14 @@ const docTemplate = `{
         },
         "usecases.AppointmentMedicalData": {
             "type": "object",
+            "required": [
+                "client_id"
+            ],
             "properties": {
                 "anamnesis": {
+                    "type": "string"
+                },
+                "client_id": {
                     "type": "string"
                 },
                 "comment": {

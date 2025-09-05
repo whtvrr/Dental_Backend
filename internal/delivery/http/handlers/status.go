@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/whtvrr/Dental_Backend/internal/delivery/http/requests"
 	"github.com/whtvrr/Dental_Backend/internal/delivery/http/response"
 	"github.com/whtvrr/Dental_Backend/internal/domain/entities"
 	"github.com/whtvrr/Dental_Backend/internal/usecases"
@@ -28,16 +29,24 @@ func NewStatusHandler(statusUseCase *usecases.StatusUseCase) *StatusHandler {
 // @Accept json
 // @Produce json
 // @Security BearerAuth
-// @Param status body entities.Status true "Status data"
+// @Param status body requests.CreateStatusRequest true "Status data"
 // @Success 201 {object} response.StandardResponse
 // @Failure 400 {object} response.StandardResponse "Bad Request"
 // @Failure 500 {object} response.StandardResponse "Internal Server Error"
 // @Router /statuses [post]
 func (h *StatusHandler) CreateStatus(c *gin.Context) {
-	var status entities.Status
-	if err := c.ShouldBindJSON(&status); err != nil {
+	var req requests.CreateStatusRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, response.BadRequest(err.Error()))
 		return
+	}
+
+	status := entities.Status{
+		Title:       req.Title,
+		Type:        req.Type,
+		Code:        req.Code,
+		Description: req.Description,
+		Color:       req.Color,
 	}
 
 	if err := h.statusUseCase.CreateStatus(c.Request.Context(), &status); err != nil {
@@ -84,7 +93,7 @@ func (h *StatusHandler) GetStatus(c *gin.Context) {
 // @Produce json
 // @Security BearerAuth
 // @Param id path string true "Status ID"
-// @Param status body entities.Status true "Updated status data"
+// @Param status body requests.UpdateStatusRequest true "Updated status data"
 // @Success 200 {object} response.StandardResponse
 // @Failure 400 {object} response.StandardResponse "Bad Request"
 // @Failure 500 {object} response.StandardResponse "Internal Server Error"
@@ -97,12 +106,21 @@ func (h *StatusHandler) UpdateStatus(c *gin.Context) {
 		return
 	}
 
-	var status entities.Status
-	if err := c.ShouldBindJSON(&status); err != nil {
+	var req requests.UpdateStatusRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, response.BadRequest(err.Error()))
 		return
 	}
-	status.ID = id
+
+	status := entities.Status{
+		ID:          id,
+		Title:       req.Title,
+		Type:        req.Type,
+		Code:        req.Code,
+		Description: req.Description,
+		Color:       req.Color,
+		IsActive:    req.IsActive,
+	}
 
 	if err := h.statusUseCase.UpdateStatus(c.Request.Context(), &status); err != nil {
 		c.JSON(http.StatusInternalServerError, response.InternalServerError(err.Error()))

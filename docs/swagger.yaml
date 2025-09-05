@@ -48,22 +48,6 @@ definitions:
     - AppointmentStatusInProgress
     - AppointmentStatusCompleted
     - AppointmentStatusCanceled
-  entities.Complaint:
-    properties:
-      category:
-        description: pain, cosmetic, etc.
-        type: string
-      created_at:
-        type: string
-      description:
-        type: string
-      id:
-        type: string
-      title:
-        type: string
-      updated_at:
-        type: string
-    type: object
   entities.Formula:
     properties:
       created_at:
@@ -77,29 +61,6 @@ definitions:
       updated_at:
         type: string
       user_id:
-        type: string
-    type: object
-  entities.Status:
-    properties:
-      code:
-        description: ICD-10 codes like K04, D05
-        type: string
-      color:
-        description: For tooth formula visualization
-        type: string
-      created_at:
-        type: string
-      description:
-        type: string
-      id:
-        type: string
-      is_active:
-        type: boolean
-      title:
-        type: string
-      type:
-        $ref: '#/definitions/entities.StatusType'
-      updated_at:
         type: string
     type: object
   entities.StatusType:
@@ -162,8 +123,6 @@ definitions:
         type: string
       duration_minutes:
         type: integer
-      status:
-        $ref: '#/definitions/entities.AppointmentStatus'
     required:
     - client_id
     - date_time
@@ -203,6 +162,64 @@ definitions:
         type: string
       role:
         $ref: '#/definitions/entities.UserRole'
+    type: object
+  requests.CreateComplaintRequest:
+    properties:
+      category:
+        type: string
+      description:
+        type: string
+      title:
+        type: string
+    required:
+    - title
+    type: object
+  requests.CreateStatusRequest:
+    properties:
+      code:
+        type: string
+      color:
+        type: string
+      description:
+        type: string
+      title:
+        type: string
+      type:
+        $ref: '#/definitions/entities.StatusType'
+    required:
+    - code
+    - title
+    - type
+    type: object
+  requests.UpdateComplaintRequest:
+    properties:
+      category:
+        type: string
+      description:
+        type: string
+      title:
+        type: string
+    required:
+    - title
+    type: object
+  requests.UpdateStatusRequest:
+    properties:
+      code:
+        type: string
+      color:
+        type: string
+      description:
+        type: string
+      is_active:
+        type: boolean
+      title:
+        type: string
+      type:
+        $ref: '#/definitions/entities.StatusType'
+    required:
+    - code
+    - title
+    - type
     type: object
   response.StandardResponse:
     properties:
@@ -534,12 +551,12 @@ paths:
         name: doctorId
         required: true
         type: string
-      - description: Start date (YYYY-MM-DD)
+      - description: Start date (DD.MM.YYYY)
         in: query
         name: from
         required: true
         type: string
-      - description: End date (YYYY-MM-DD)
+      - description: End date (DD.MM.YYYY)
         in: query
         name: to
         required: true
@@ -713,7 +730,7 @@ paths:
         name: complaint
         required: true
         schema:
-          $ref: '#/definitions/entities.Complaint'
+          $ref: '#/definitions/requests.CreateComplaintRequest'
       produces:
       - application/json
       responses:
@@ -806,7 +823,7 @@ paths:
         name: complaint
         required: true
         schema:
-          $ref: '#/definitions/entities.Complaint'
+          $ref: '#/definitions/requests.UpdateComplaintRequest'
       produces:
       - application/json
       responses:
@@ -929,7 +946,7 @@ paths:
         name: status
         required: true
         schema:
-          $ref: '#/definitions/entities.Status'
+          $ref: '#/definitions/requests.CreateStatusRequest'
       produces:
       - application/json
       responses:
@@ -1022,7 +1039,7 @@ paths:
         name: status
         required: true
         schema:
-          $ref: '#/definitions/entities.Status'
+          $ref: '#/definitions/requests.UpdateStatusRequest'
       produces:
       - application/json
       responses:

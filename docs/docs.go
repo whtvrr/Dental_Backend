@@ -188,14 +188,14 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Start date (YYYY-MM-DD)",
+                        "description": "Start date (DD.MM.YYYY)",
                         "name": "from",
                         "in": "query",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "End date (YYYY-MM-DD)",
+                        "description": "End date (DD.MM.YYYY)",
                         "name": "to",
                         "in": "query",
                         "required": true
@@ -712,7 +712,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/entities.Complaint"
+                            "$ref": "#/definitions/requests.CreateComplaintRequest"
                         }
                     }
                 ],
@@ -814,7 +814,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/entities.Complaint"
+                            "$ref": "#/definitions/requests.UpdateComplaintRequest"
                         }
                     }
                 ],
@@ -1052,7 +1052,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/entities.Status"
+                            "$ref": "#/definitions/requests.CreateStatusRequest"
                         }
                     }
                 ],
@@ -1353,7 +1353,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/entities.Status"
+                            "$ref": "#/definitions/requests.UpdateStatusRequest"
                         }
                     }
                 ],
@@ -1909,30 +1909,6 @@ const docTemplate = `{
                 "AppointmentStatusCanceled"
             ]
         },
-        "entities.Complaint": {
-            "type": "object",
-            "properties": {
-                "category": {
-                    "description": "pain, cosmetic, etc.",
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "title": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
         "entities.Formula": {
             "type": "object",
             "properties": {
@@ -1952,40 +1928,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "user_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "entities.Status": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "description": "ICD-10 codes like K04, D05",
-                    "type": "string"
-                },
-                "color": {
-                    "description": "For tooth formula visualization",
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "is_active": {
-                    "type": "boolean"
-                },
-                "title": {
-                    "type": "string"
-                },
-                "type": {
-                    "$ref": "#/definitions/entities.StatusType"
-                },
-                "updated_at": {
                     "type": "string"
                 }
             }
@@ -2081,9 +2023,6 @@ const docTemplate = `{
                 },
                 "duration_minutes": {
                     "type": "integer"
-                },
-                "status": {
-                    "$ref": "#/definitions/entities.AppointmentStatus"
                 }
             }
         },
@@ -2135,6 +2074,93 @@ const docTemplate = `{
                 },
                 "role": {
                     "$ref": "#/definitions/entities.UserRole"
+                }
+            }
+        },
+        "requests.CreateComplaintRequest": {
+            "type": "object",
+            "required": [
+                "title"
+            ],
+            "properties": {
+                "category": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "requests.CreateStatusRequest": {
+            "type": "object",
+            "required": [
+                "code",
+                "title",
+                "type"
+            ],
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "color": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/entities.StatusType"
+                }
+            }
+        },
+        "requests.UpdateComplaintRequest": {
+            "type": "object",
+            "required": [
+                "title"
+            ],
+            "properties": {
+                "category": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "requests.UpdateStatusRequest": {
+            "type": "object",
+            "required": [
+                "code",
+                "title",
+                "type"
+            ],
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "color": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "is_active": {
+                    "type": "boolean"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/entities.StatusType"
                 }
             }
         },

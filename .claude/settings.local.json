@@ -4,7 +4,8 @@
       "Bash(go install:*)",
       "Bash(go get:*)",
       "Bash(swag init:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(mkdir:*)"
     ],
     "deny": [],
     "ask": []

@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/whtvrr/Dental_Backend/internal/delivery/http/requests"
 	"github.com/whtvrr/Dental_Backend/internal/delivery/http/response"
 	"github.com/whtvrr/Dental_Backend/internal/domain/entities"
 	"github.com/whtvrr/Dental_Backend/internal/usecases"
@@ -28,16 +29,22 @@ func NewComplaintHandler(complaintUseCase *usecases.ComplaintUseCase) *Complaint
 // @Accept json
 // @Produce json
 // @Security BearerAuth
-// @Param complaint body entities.Complaint true "Complaint data"
+// @Param complaint body requests.CreateComplaintRequest true "Complaint data"
 // @Success 201 {object} response.StandardResponse
 // @Failure 400 {object} response.StandardResponse "Bad Request"
 // @Failure 500 {object} response.StandardResponse "Internal Server Error"
 // @Router /complaints [post]
 func (h *ComplaintHandler) CreateComplaint(c *gin.Context) {
-	var complaint entities.Complaint
-	if err := c.ShouldBindJSON(&complaint); err != nil {
+	var req requests.CreateComplaintRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, response.BadRequest(err.Error()))
 		return
+	}
+
+	complaint := entities.Complaint{
+		Title:       req.Title,
+		Description: req.Description,
+		Category:    req.Category,
 	}
 
 	if err := h.complaintUseCase.CreateComplaint(c.Request.Context(), &complaint); err != nil {
@@ -84,7 +91,7 @@ func (h *ComplaintHandler) GetComplaint(c *gin.Context) {
 // @Produce json
 // @Security BearerAuth
 // @Param id path string true "Complaint ID"
-// @Param complaint body entities.Complaint true "Updated complaint data"
+// @Param complaint body requests.UpdateComplaintRequest true "Updated complaint data"
 // @Success 200 {object} response.StandardResponse
 // @Failure 400 {object} response.StandardResponse "Bad Request"
 // @Failure 500 {object} response.StandardResponse "Internal Server Error"
@@ -97,12 +104,18 @@ func (h *ComplaintHandler) UpdateComplaint(c *gin.Context) {
 		return
 	}
 
-	var complaint entities.Complaint
-	if err := c.ShouldBindJSON(&complaint); err != nil {
+	var req requests.UpdateComplaintRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, response.BadRequest(err.Error()))
 		return
 	}
-	complaint.ID = id
+
+	complaint := entities.Complaint{
+		ID:          id,
+		Title:       req.Title,
+		Description: req.Description,
+		Category:    req.Category,
+	}
 
 	if err := h.complaintUseCase.UpdateComplaint(c.Request.Context(), &complaint); err != nil {
 		c.JSON(http.StatusInternalServerError, response.InternalServerError(err.Error()))

@@ -74,8 +74,44 @@ func (uc *AppointmentUseCase) CompleteAppointment(ctx context.Context, id primit
 	appointment.Comment = medicalData.Comment
 	appointment.Status = entities.AppointmentStatusCompleted
 
+	// Completion timestamp for all tooth statuses
+	completionTime := time.Now()
+
 	// Handle formula logic based on user's FormulaID field
 	if medicalData.Formula != nil {
+		// Add appointment_id and timestamp to all tooth statuses
+		for i := range medicalData.Formula.Teeth {
+			tooth := &medicalData.Formula.Teeth[i]
+
+			// Set appointment_id and timestamp for Whole (crown)
+			if tooth.Whole != nil {
+				tooth.Whole.AppointmentID = id
+				tooth.Whole.Timestamp = completionTime
+			}
+
+			// Set appointment_id and timestamp for Gum (jaw)
+			if tooth.Gum != nil {
+				tooth.Gum.AppointmentID = id
+				tooth.Gum.Timestamp = completionTime
+			}
+
+			// Set appointment_id and timestamp for each Root
+			if tooth.Roots != nil {
+				for j := range tooth.Roots {
+					tooth.Roots[j].AppointmentID = id
+					tooth.Roots[j].Timestamp = completionTime
+				}
+			}
+
+			// Set appointment_id and timestamp for each Segment
+			if tooth.Segments != nil {
+				for key := range tooth.Segments {
+					tooth.Segments[key].AppointmentID = id
+					tooth.Segments[key].Timestamp = completionTime
+				}
+			}
+		}
+
 		client, err := uc.userRepo.GetByID(ctx, medicalData.ClientID)
 		if err != nil {
 			return err
@@ -85,7 +121,7 @@ func (uc *AppointmentUseCase) CompleteAppointment(ctx context.Context, id primit
 			// Update existing formula
 			medicalData.Formula.ID = *client.FormulaID
 			medicalData.Formula.UserID = medicalData.ClientID
-			medicalData.Formula.UpdatedAt = time.Now()
+			medicalData.Formula.UpdatedAt = completionTime
 
 			err := uc.formulaRepo.Update(ctx, medicalData.Formula)
 			if err != nil {
@@ -94,8 +130,8 @@ func (uc *AppointmentUseCase) CompleteAppointment(ctx context.Context, id primit
 		} else {
 			// Create new formula for the user
 			medicalData.Formula.UserID = medicalData.ClientID
-			medicalData.Formula.CreatedAt = time.Now()
-			medicalData.Formula.UpdatedAt = time.Now()
+			medicalData.Formula.CreatedAt = completionTime
+			medicalData.Formula.UpdatedAt = completionTime
 
 			err := uc.formulaRepo.Create(ctx, medicalData.Formula)
 			if err != nil {
@@ -104,7 +140,7 @@ func (uc *AppointmentUseCase) CompleteAppointment(ctx context.Context, id primit
 
 			// Update user's FormulaID
 			client.FormulaID = &medicalData.Formula.ID
-			client.UpdatedAt = time.Now()
+			client.UpdatedAt = completionTime
 			err = uc.userRepo.Update(ctx, client)
 			if err != nil {
 				return err

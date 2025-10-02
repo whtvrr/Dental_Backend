@@ -5,7 +5,7 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
-
+	
 type Formula struct {
 	ID        primitive.ObjectID `bson:"_id,omitempty" json:"id"`
 	UserID    primitive.ObjectID `bson:"user_id" json:"user_id"`
@@ -18,7 +18,7 @@ type Tooth struct {
 	Number   int                     `bson:"number" json:"number"`
 	Whole    *ToothStatus            `bson:"whole,omitempty" json:"whole,omitempty"`
 	Gum      *ToothStatus            `bson:"gum,omitempty" json:"gum,omitempty"`
-	Roots    *ToothStatus            `bson:"roots,omitempty" json:"roots,omitempty"`
+	Roots    []*ToothStatus          `bson:"roots,omitempty" json:"roots,omitempty"`
 	Segments map[string]*ToothStatus `bson:"segments,omitempty" json:"segments,omitempty"`
 }
 

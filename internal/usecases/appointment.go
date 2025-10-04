@@ -112,6 +112,9 @@ func (uc *AppointmentUseCase) CompleteAppointment(ctx context.Context, id primit
 			}
 		}
 
+		// Store appointment's own formula
+		appointmentFormula := medicalData.Formula
+
 		client, err := uc.userRepo.GetByID(ctx, medicalData.ClientID)
 		if err != nil {
 			return err
@@ -134,10 +137,7 @@ func (uc *AppointmentUseCase) CompleteAppointment(ctx context.Context, id primit
 			if err != nil {
 				return err
 			}
-
-			medicalData.Formula = mergedFormula
 		} else {
-			// Create new formula for the user
 			medicalData.Formula.UserID = medicalData.ClientID
 			medicalData.Formula.CreatedAt = completionTime
 			medicalData.Formula.UpdatedAt = completionTime
@@ -156,7 +156,8 @@ func (uc *AppointmentUseCase) CompleteAppointment(ctx context.Context, id primit
 			}
 		}
 
-		appointment.Formula = medicalData.Formula
+		// Set only the appointment's own formula in the appointment record
+		appointment.Formula = appointmentFormula
 	}
 
 	return uc.appointmentRepo.Update(ctx, appointment)

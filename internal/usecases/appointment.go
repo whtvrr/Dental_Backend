@@ -118,15 +118,24 @@ func (uc *AppointmentUseCase) CompleteAppointment(ctx context.Context, id primit
 		}
 
 		if client.FormulaID != nil {
-			// Update existing formula
-			medicalData.Formula.ID = *client.FormulaID
-			medicalData.Formula.UserID = medicalData.ClientID
-			medicalData.Formula.UpdatedAt = completionTime
-
-			err := uc.formulaRepo.Update(ctx, medicalData.Formula)
+			// Get existing formula
+			existingFormula, err := uc.formulaRepo.GetByID(ctx, *client.FormulaID)
 			if err != nil {
 				return err
 			}
+
+			// Merge appointment formula with existing formula
+			mergedFormula := uc.mergeFormulas(existingFormula, medicalData.Formula)
+			mergedFormula.ID = *client.FormulaID
+			mergedFormula.UserID = medicalData.ClientID
+			mergedFormula.UpdatedAt = completionTime
+
+			err = uc.formulaRepo.Update(ctx, mergedFormula)
+			if err != nil {
+				return err
+			}
+
+			medicalData.Formula = mergedFormula
 		} else {
 			// Create new formula for the user
 			medicalData.Formula.UserID = medicalData.ClientID
@@ -147,7 +156,6 @@ func (uc *AppointmentUseCase) CompleteAppointment(ctx context.Context, id primit
 			}
 		}
 
-		// Set the formula in the appointment record
 		appointment.Formula = medicalData.Formula
 	}
 
@@ -193,4 +201,66 @@ type AppointmentMedicalData struct {
 	Comment         *string             `json:"comment,omitempty"`
 	ClientID        primitive.ObjectID  `json:"client_id" binding:"required"`
 	Formula         *entities.Formula   `json:"formula,omitempty"`
+}
+
+// mergeFormulas merges appointment formula into existing user formula
+// Teeth numbers are the main identifiers. If the same tooth exists in both:
+// - For Whole, Gum: overwrite with appointment data if present
+// - For Roots: always overwrite with appointment data
+// - For Segments: merge by segment key (mid, rt, lt, rb, lb), overwriting conflicts
+func (uc *AppointmentUseCase) mergeFormulas(existing, appointment *entities.Formula) *entities.Formula {
+	// Create a map of existing teeth for quick lookup
+	existingTeethMap := make(map[int]*entities.Tooth)
+	for i := range existing.Teeth {
+		existingTeethMap[existing.Teeth[i].Number] = &existing.Teeth[i]
+	}
+
+	// Process appointment teeth
+	for i := range appointment.Teeth {
+		appointmentTooth := &appointment.Teeth[i]
+
+		if existingTooth, exists := existingTeethMap[appointmentTooth.Number]; exists {
+			// Merge tooth parts
+			uc.mergeToothParts(existingTooth, appointmentTooth)
+		} else {
+			// Add new tooth from appointment
+			existing.Teeth = append(existing.Teeth, *appointmentTooth)
+			existingTeethMap[appointmentTooth.Number] = appointmentTooth
+		}
+	}
+
+	return existing
+}
+
+// mergeToothParts merges individual tooth parts according to the rules:
+// - Whole/Gum: overwrite if appointment has data
+// - Roots: always overwrite with appointment data
+// - Segments: merge by key, overwriting conflicts
+func (uc *AppointmentUseCase) mergeToothParts(existing, appointment *entities.Tooth) {
+	// Merge Whole (crown) - overwrite if appointment has data
+	if appointment.Whole != nil {
+		existing.Whole = appointment.Whole
+	}
+
+	// Merge Gum (jaw) - overwrite if appointment has data
+	if appointment.Gum != nil {
+		existing.Gum = appointment.Gum
+	}
+
+	// Merge Roots - always overwrite with appointment data
+	if appointment.Roots != nil {
+		existing.Roots = appointment.Roots
+	}
+
+	// Merge Segments - merge by key, overwriting conflicts
+	if appointment.Segments != nil {
+		if existing.Segments == nil {
+			existing.Segments = make(map[string]*entities.ToothStatus)
+		}
+
+		// Valid segment keys: mid, rt, lt, rb, lb
+		for key, status := range appointment.Segments {
+			existing.Segments[key] = status
+		}
+	}
 }

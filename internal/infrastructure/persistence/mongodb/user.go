@@ -25,12 +25,12 @@ func NewUserRepository(db *mongo.Database) repositories.UserRepository {
 func (r *userRepository) Create(ctx context.Context, user *entities.User) error {
 	user.CreatedAt = time.Now()
 	user.UpdatedAt = time.Now()
-	
+
 	result, err := r.collection.InsertOne(ctx, user)
 	if err != nil {
 		return err
 	}
-	
+
 	user.ID = result.InsertedID.(primitive.ObjectID)
 	return nil
 }
@@ -55,7 +55,7 @@ func (r *userRepository) GetByEmail(ctx context.Context, email string) (*entitie
 
 func (r *userRepository) Update(ctx context.Context, user *entities.User) error {
 	user.UpdatedAt = time.Now()
-	
+
 	_, err := r.collection.UpdateOne(
 		ctx,
 		bson.M{"_id": user.ID},
@@ -74,13 +74,13 @@ func (r *userRepository) List(ctx context.Context, offset, limit int) ([]*entiti
 	opts.SetSkip(int64(offset))
 	opts.SetLimit(int64(limit))
 	opts.SetSort(bson.D{{Key: "created_at", Value: -1}})
-	
+
 	cursor, err := r.collection.Find(ctx, bson.M{}, opts)
 	if err != nil {
 		return nil, err
 	}
 	defer cursor.Close(ctx)
-	
+
 	var users []*entities.User
 	for cursor.Next(ctx) {
 		var user entities.User
@@ -89,7 +89,7 @@ func (r *userRepository) List(ctx context.Context, offset, limit int) ([]*entiti
 		}
 		users = append(users, &user)
 	}
-	
+
 	return users, cursor.Err()
 }
 
@@ -99,7 +99,7 @@ func (r *userRepository) GetByRole(ctx context.Context, role entities.UserRole) 
 		return nil, err
 	}
 	defer cursor.Close(ctx)
-	
+
 	var users []*entities.User
 	for cursor.Next(ctx) {
 		var user entities.User
@@ -108,22 +108,32 @@ func (r *userRepository) GetByRole(ctx context.Context, role entities.UserRole) 
 		}
 		users = append(users, &user)
 	}
-	
+
 	return users, cursor.Err()
 }
 
-func (r *userRepository) GetByRoleWithPagination(ctx context.Context, role entities.UserRole, offset, limit int) ([]*entities.User, error) {
+func (r *userRepository) GetByRoleWithPagination(ctx context.Context, role entities.UserRole, offset, limit int, query string) ([]*entities.User, error) {
 	opts := options.Find()
 	opts.SetSkip(int64(offset))
 	opts.SetLimit(int64(limit))
 	opts.SetSort(bson.D{{Key: "created_at", Value: -1}})
-	
-	cursor, err := r.collection.Find(ctx, bson.M{"role": role}, opts)
+
+	filter := bson.M{"role": role}
+
+	if query != "" {
+		regex := bson.M{"$regex": query, "$options": "i"}
+		filter["$or"] = []bson.M{
+			{"email": regex},
+			{"full_name": regex},
+			{"address": regex},
+		}
+	}
+	cursor, err := r.collection.Find(ctx, filter, opts)
 	if err != nil {
 		return nil, err
 	}
 	defer cursor.Close(ctx)
-	
+
 	var users []*entities.User
 	for cursor.Next(ctx) {
 		var user entities.User
@@ -132,6 +142,6 @@ func (r *userRepository) GetByRoleWithPagination(ctx context.Context, role entit
 		}
 		users = append(users, &user)
 	}
-	
+
 	return users, cursor.Err()
 }

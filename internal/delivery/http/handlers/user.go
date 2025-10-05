@@ -305,6 +305,7 @@ func (h *UserHandler) GetDoctors(c *gin.Context) {
 func (h *UserHandler) GetClients(c *gin.Context) {
 	offsetStr := c.DefaultQuery("offset", "0")
 	limitStr := c.DefaultQuery("limit", "10")
+	query := c.DefaultQuery("q", "")
 
 	offset, err := strconv.Atoi(offsetStr)
 	if err != nil {
@@ -318,7 +319,7 @@ func (h *UserHandler) GetClients(c *gin.Context) {
 		return
 	}
 
-	clients, err := h.userUseCase.GetClientsWithPagination(c.Request.Context(), offset, limit)
+	clients, err := h.userUseCase.GetClientsWithPagination(c.Request.Context(), offset, limit, query)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, response.InternalServerError(err.Error()))
 		return

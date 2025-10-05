@@ -92,7 +92,7 @@ func (uc *UserUseCase) GetDoctors(ctx context.Context) ([]*entities.User, error)
 }
 
 func (uc *UserUseCase) GetDoctorsWithPagination(ctx context.Context, offset, limit int) ([]*entities.User, error) {
-	return uc.userRepo.GetByRoleWithPagination(ctx, entities.RoleDoctor, offset, limit)
+	return uc.userRepo.GetByRoleWithPagination(ctx, entities.RoleDoctor, offset, limit, "")
 }
 
 func (uc *UserUseCase) GetClients(ctx context.Context) ([]*entities.User, error) {
@@ -104,43 +104,43 @@ func (uc *UserUseCase) GetStaff(ctx context.Context) ([]*entities.User, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	receptionists, err := uc.userRepo.GetByRole(ctx, entities.RoleReceptionist)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	staff := make([]*entities.User, 0, len(doctors)+len(receptionists))
 	staff = append(staff, doctors...)
 	staff = append(staff, receptionists...)
-	
+
 	return staff, nil
 }
 
 func (uc *UserUseCase) GetStaffWithPagination(ctx context.Context, offset, limit int) ([]*entities.User, error) {
-	doctors, err := uc.userRepo.GetByRoleWithPagination(ctx, entities.RoleDoctor, offset, limit)
+	doctors, err := uc.userRepo.GetByRoleWithPagination(ctx, entities.RoleDoctor, offset, limit, "")
 	if err != nil {
 		return nil, err
 	}
-	
+
 	// Adjust offset and limit for receptionists based on how many doctors we got
 	remainingLimit := limit - len(doctors)
 	receptionistOffset := 0
 	if offset > len(doctors) {
 		receptionistOffset = offset - len(doctors)
 	}
-	
+
 	if remainingLimit > 0 {
-		receptionists, err := uc.userRepo.GetByRoleWithPagination(ctx, entities.RoleReceptionist, receptionistOffset, remainingLimit)
+		receptionists, err := uc.userRepo.GetByRoleWithPagination(ctx, entities.RoleReceptionist, receptionistOffset, remainingLimit, "")
 		if err != nil {
 			return nil, err
 		}
 		doctors = append(doctors, receptionists...)
 	}
-	
+
 	return doctors, nil
 }
 
-func (uc *UserUseCase) GetClientsWithPagination(ctx context.Context, offset, limit int) ([]*entities.User, error) {
-	return uc.userRepo.GetByRoleWithPagination(ctx, entities.RoleClient, offset, limit)
+func (uc *UserUseCase) GetClientsWithPagination(ctx context.Context, offset, limit int, query string) ([]*entities.User, error) {
+	return uc.userRepo.GetByRoleWithPagination(ctx, entities.RoleClient, offset, limit, query)
 }

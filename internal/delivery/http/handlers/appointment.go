@@ -17,6 +17,7 @@ type AppointmentCreateRequest struct {
 	DoctorID        primitive.ObjectID `json:"doctor_id" binding:"required"`
 	ClientID        primitive.ObjectID `json:"client_id" binding:"required"`
 	DurationMinutes int                `json:"duration_minutes" binding:"required"`
+	Status          string             `json:"status,omitempty"`
 	Comment         *string            `json:"comment,omitempty"`
 }
 
@@ -55,6 +56,7 @@ func (h *AppointmentHandler) CreateAppointment(c *gin.Context) {
 		DoctorID:        req.DoctorID,
 		ClientID:        req.ClientID,
 		DurationMinutes: req.DurationMinutes,
+		Status:          entities.AppointmentStatus(req.Status),
 		Comment:         req.Comment,
 	}
 

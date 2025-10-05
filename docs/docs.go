@@ -1955,7 +1955,10 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "roots": {
-                    "$ref": "#/definitions/entities.ToothStatus"
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entities.ToothStatus"
+                    }
                 },
                 "segments": {
                     "type": "object",
@@ -2023,6 +2026,9 @@ const docTemplate = `{
                 },
                 "duration_minutes": {
                     "type": "integer"
+                },
+                "status": {
+                    "type": "string"
                 }
             }
         },
@@ -2282,6 +2288,8 @@ var SwaggerInfo = &swag.Spec{
 	Description:      "This is a dental clinic management system server.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
+	LeftDelim:        "{{",
+	RightDelim:       "}}",
 }
 
 func init() {

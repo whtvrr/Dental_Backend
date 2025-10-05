@@ -80,7 +80,9 @@ definitions:
       number:
         type: integer
       roots:
-        $ref: '#/definitions/entities.ToothStatus'
+        items:
+          $ref: '#/definitions/entities.ToothStatus'
+        type: array
       segments:
         additionalProperties:
           $ref: '#/definitions/entities.ToothStatus'
@@ -123,6 +125,8 @@ definitions:
         type: string
       duration_minutes:
         type: integer
+      status:
+        type: string
     required:
     - client_id
     - date_time

@@ -1952,7 +1952,10 @@
                     "type": "integer"
                 },
                 "roots": {
-                    "$ref": "#/definitions/entities.ToothStatus"
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entities.ToothStatus"
+                    }
                 },
                 "segments": {
                     "type": "object",
@@ -2020,6 +2023,9 @@
                 },
                 "duration_minutes": {
                     "type": "integer"
+                },
+                "status": {
+                    "type": "string"
                 }
             }
         },

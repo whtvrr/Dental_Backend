@@ -73,7 +73,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Create a new appointment with the provided details",
+                "description": "Create a new appointment with the provided details. Duration defaults to 30 minutes if not provided.",
                 "consumes": [
                     "application/json"
                 ],
@@ -2015,8 +2015,7 @@ const docTemplate = `{
             "required": [
                 "client_id",
                 "date_time",
-                "doctor_id",
-                "duration_minutes"
+                "doctor_id"
             ],
             "properties": {
                 "client_id": {

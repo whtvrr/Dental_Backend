@@ -16,7 +16,7 @@ type AppointmentCreateRequest struct {
 	DateTime        time.Time          `json:"date_time" binding:"required"`
 	DoctorID        primitive.ObjectID `json:"doctor_id" binding:"required"`
 	ClientID        primitive.ObjectID `json:"client_id" binding:"required"`
-	DurationMinutes int                `json:"duration_minutes" binding:"required"`
+	DurationMinutes *int               `json:"duration_minutes,omitempty"`
 	Status          string             `json:"status,omitempty"`
 	Comment         *string            `json:"comment,omitempty"`
 }
@@ -33,7 +33,7 @@ func NewAppointmentHandler(appointmentUseCase *usecases.AppointmentUseCase) *App
 
 // CreateAppointment godoc
 // @Summary Create a new appointment
-// @Description Create a new appointment with the provided details
+// @Description Create a new appointment with the provided details. Duration defaults to 30 minutes if not provided.
 // @Tags appointments
 // @Accept json
 // @Produce json
@@ -50,12 +50,18 @@ func (h *AppointmentHandler) CreateAppointment(c *gin.Context) {
 		return
 	}
 
+	// Set default duration to 30 minutes if not provided
+	durationMinutes := 30
+	if req.DurationMinutes != nil {
+		durationMinutes = *req.DurationMinutes
+	}
+
 	// Convert request to appointment entity
 	appointment := &entities.Appointment{
 		DateTime:        req.DateTime,
 		DoctorID:        req.DoctorID,
 		ClientID:        req.ClientID,
-		DurationMinutes: req.DurationMinutes,
+		DurationMinutes: durationMinutes,
 		Status:          entities.AppointmentStatus(req.Status),
 		Comment:         req.Comment,
 	}

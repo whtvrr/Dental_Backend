@@ -136,7 +136,6 @@ definitions:
     - client_id
     - date_time
     - doctor_id
-    - duration_minutes
     type: object
   handlers.CreateUserRequest:
     properties:
@@ -335,7 +334,8 @@ paths:
     post:
       consumes:
       - application/json
-      description: Create a new appointment with the provided details
+      description: Create a new appointment with the provided details. Duration defaults
+        to 30 minutes if not provided.
       parameters:
       - description: Appointment data
         in: body

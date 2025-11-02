@@ -74,7 +74,7 @@ func (uc *AppointmentUseCase) CompleteAppointment(ctx context.Context, id primit
 	// Update appointment with medical data
 	appointment.ComplaintID = medicalData.ComplaintID
 	appointment.CustomComplaint = medicalData.CustomComplaint
-	appointment.Anamnesis = medicalData.Anamnesis
+	appointment.AnamnesisID = medicalData.AnamnesisID
 	appointment.DiagnosisID = medicalData.DiagnosisID
 	appointment.TreatmentID = medicalData.TreatmentID
 	appointment.Comment = medicalData.Comment
@@ -203,7 +203,7 @@ func (uc *AppointmentUseCase) GetAppointmentsByDateRange(ctx context.Context, fr
 type AppointmentMedicalData struct {
 	ComplaintID     *primitive.ObjectID `json:"complaint_id,omitempty"`
 	CustomComplaint *string             `json:"custom_complaint,omitempty"`
-	Anamnesis       *string             `json:"anamnesis,omitempty"`
+	AnamnesisID     *primitive.ObjectID `json:"anamnesis_id,omitempty"`
 	DiagnosisID     *primitive.ObjectID `json:"diagnosis_id,omitempty"`
 	TreatmentID     *primitive.ObjectID `json:"treatment_id,omitempty"`
 	Comment         *string             `json:"comment,omitempty"`

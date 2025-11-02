@@ -57,6 +57,7 @@ func main() {
 	appointmentRepo := mongodb.NewAppointmentRepository(db)
 	statusRepo := mongodb.NewStatusRepository(db)
 	complaintRepo := mongodb.NewComplaintRepository(db)
+	anamnesisRepo := mongodb.NewAnamnesisRepository(db)
 	formulaRepo := mongodb.NewFormulaRepository(db)
 
 	// Parse token TTL
@@ -75,6 +76,7 @@ func main() {
 	appointmentUseCase := usecases.NewAppointmentUseCase(appointmentRepo, userRepo, formulaRepo)
 	statusUseCase := usecases.NewStatusUseCase(statusRepo)
 	complaintUseCase := usecases.NewComplaintUseCase(complaintRepo)
+	anamnesisUseCase := usecases.NewAnamnesisUseCase(anamnesisRepo)
 	formulaUseCase := usecases.NewFormulaUseCase(formulaRepo)
 	authUseCase := usecases.NewAuthUseCase(userRepo, jwtManager)
 
@@ -84,6 +86,7 @@ func main() {
 	appointmentHandler := handlers.NewAppointmentHandler(appointmentUseCase)
 	statusHandler := handlers.NewStatusHandler(statusUseCase)
 	complaintHandler := handlers.NewComplaintHandler(complaintUseCase)
+	anamnesisHandler := handlers.NewAnamnesisHandler(anamnesisUseCase)
 	formulaHandler := handlers.NewFormulaHandler(formulaUseCase)
 
 	handlerGroup := &http.Handlers{
@@ -92,6 +95,7 @@ func main() {
 		Appointment: appointmentHandler,
 		Status:      statusHandler,
 		Complaint:   complaintHandler,
+		Anamnesis:   anamnesisHandler,
 		Formula:     formulaHandler,
 	}
 

@@ -2,7 +2,7 @@ basePath: /api/v1
 definitions:
   entities.Appointment:
     properties:
-      anamnesis:
+      anamnesis_id:
         type: string
       client_id:
         type: string
@@ -171,6 +171,13 @@ definitions:
       role:
         $ref: '#/definitions/entities.UserRole'
     type: object
+  requests.CreateAnamnesisRequest:
+    properties:
+      text:
+        type: string
+    required:
+    - text
+    type: object
   requests.CreateComplaintRequest:
     properties:
       title:
@@ -194,6 +201,13 @@ definitions:
     - code
     - title
     - type
+    type: object
+  requests.UpdateAnamnesisRequest:
+    properties:
+      text:
+        type: string
+    required:
+    - text
     type: object
   requests.UpdateComplaintRequest:
     properties:
@@ -231,7 +245,7 @@ definitions:
     type: object
   usecases.AppointmentMedicalData:
     properties:
-      anamnesis:
+      anamnesis_id:
         type: string
       client_id:
         type: string
@@ -297,6 +311,164 @@ info:
   title: Dental Clinic Management System API
   version: "1.0"
 paths:
+  /anamnesis:
+    get:
+      description: Get a paginated list of all anamnesis records
+      parameters:
+      - default: 0
+        description: Offset for pagination
+        in: query
+        name: offset
+        type: integer
+      - default: 10
+        description: Limit for pagination
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+      security:
+      - BearerAuth: []
+      summary: List all anamnesis with pagination
+      tags:
+      - anamnesis
+    post:
+      consumes:
+      - application/json
+      description: Create a new anamnesis record
+      parameters:
+      - description: Anamnesis data
+        in: body
+        name: anamnesis
+        required: true
+        schema:
+          $ref: '#/definitions/requests.CreateAnamnesisRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+      security:
+      - BearerAuth: []
+      summary: Create a new anamnesis
+      tags:
+      - anamnesis
+  /anamnesis/{id}:
+    delete:
+      description: Delete an anamnesis by its ID
+      parameters:
+      - description: Anamnesis ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete an anamnesis
+      tags:
+      - anamnesis
+    get:
+      description: Get a specific anamnesis by its ID
+      parameters:
+      - description: Anamnesis ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+      security:
+      - BearerAuth: []
+      summary: Get anamnesis by ID
+      tags:
+      - anamnesis
+    put:
+      consumes:
+      - application/json
+      description: Update an anamnesis with the provided details
+      parameters:
+      - description: Anamnesis ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated anamnesis data
+        in: body
+        name: anamnesis
+        required: true
+        schema:
+          $ref: '#/definitions/requests.UpdateAnamnesisRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.StandardResponse'
+      security:
+      - BearerAuth: []
+      summary: Update an existing anamnesis
+      tags:
+      - anamnesis
   /appointments:
     get:
       description: Get a paginated list of all appointments

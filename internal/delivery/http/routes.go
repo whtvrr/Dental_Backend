@@ -12,6 +12,7 @@ type Handlers struct {
 	Appointment *handlers.AppointmentHandler
 	Status      *handlers.StatusHandler
 	Complaint   *handlers.ComplaintHandler
+	Anamnesis   *handlers.AnamnesisHandler
 	Formula     *handlers.FormulaHandler
 }
 
@@ -40,7 +41,7 @@ func SetupRoutes(router *gin.Engine, h *Handlers, authMiddleware *middleware.Aut
 			users.POST("", authMiddleware.RequireAdmin(), h.User.CreateUser)
 			users.DELETE("/:id", authMiddleware.RequireAdmin(), h.User.DeleteUser)
 			users.GET("", authMiddleware.RequireAdmin(), h.User.ListUsers)
-			
+
 			// Doctors: Can view user details for patient cards
 			// Receptionists: Can only view clients
 			users.GET("/:id", authMiddleware.RequireStaff(), h.User.GetUser)
@@ -58,10 +59,10 @@ func SetupRoutes(router *gin.Engine, h *Handlers, authMiddleware *middleware.Aut
 			appointments.PUT("/:id", authMiddleware.RequireDoctorOrReceptionist(), h.Appointment.UpdateAppointment)
 			appointments.DELETE("/:id", authMiddleware.RequireDoctorOrReceptionist(), h.Appointment.DeleteAppointment)
 			appointments.POST("/:id/cancel", authMiddleware.RequireDoctorOrReceptionist(), h.Appointment.CancelAppointment)
-			
+
 			// Doctors: Can complete appointments (add medical data)
 			appointments.POST("/:id/complete", authMiddleware.RequireDoctor(), h.Appointment.CompleteAppointment)
-			
+
 			// All staff: Can view appointments
 			appointments.GET("/:id", authMiddleware.RequireStaff(), h.Appointment.GetAppointment)
 			appointments.GET("", authMiddleware.RequireStaff(), h.Appointment.ListAppointments)
@@ -76,7 +77,7 @@ func SetupRoutes(router *gin.Engine, h *Handlers, authMiddleware *middleware.Aut
 			statuses.POST("", authMiddleware.RequireDoctor(), h.Status.CreateStatus)
 			statuses.PUT("/:id", authMiddleware.RequireDoctor(), h.Status.UpdateStatus)
 			statuses.DELETE("/:id", authMiddleware.RequireDoctor(), h.Status.DeleteStatus)
-			
+
 			// All staff: Can view statuses
 			statuses.GET("/:id", authMiddleware.RequireStaff(), h.Status.GetStatus)
 			statuses.GET("", authMiddleware.RequireStaff(), h.Status.ListStatuses)
@@ -93,10 +94,23 @@ func SetupRoutes(router *gin.Engine, h *Handlers, authMiddleware *middleware.Aut
 			complaints.POST("", authMiddleware.RequireDoctor(), h.Complaint.CreateComplaint)
 			complaints.PUT("/:id", authMiddleware.RequireDoctor(), h.Complaint.UpdateComplaint)
 			complaints.DELETE("/:id", authMiddleware.RequireDoctor(), h.Complaint.DeleteComplaint)
-			
+
 			// All staff: Can view complaints
 			complaints.GET("/:id", authMiddleware.RequireStaff(), h.Complaint.GetComplaint)
 			complaints.GET("", authMiddleware.RequireStaff(), h.Complaint.ListComplaints)
+		}
+
+		// Anamnesis routes with RBAC
+		anamnesis := protected.Group("/anamnesis")
+		{
+			// Doctors: Can CRUD anamnesis
+			anamnesis.POST("", authMiddleware.RequireDoctor(), h.Anamnesis.CreateAnamnesis)
+			anamnesis.PUT("/:id", authMiddleware.RequireDoctor(), h.Anamnesis.UpdateAnamnesis)
+			anamnesis.DELETE("/:id", authMiddleware.RequireDoctor(), h.Anamnesis.DeleteAnamnesis)
+
+			// All staff: Can view anamnesis
+			anamnesis.GET("/:id", authMiddleware.RequireStaff(), h.Anamnesis.GetAnamnesis)
+			anamnesis.GET("", authMiddleware.RequireStaff(), h.Anamnesis.ListAnamnesis)
 		}
 
 		// Formula routes with RBAC

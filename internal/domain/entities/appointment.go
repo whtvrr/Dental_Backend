@@ -25,11 +25,11 @@ type Appointment struct {
 	
 	// Medical fields - filled during appointment
 	ComplaintID      *primitive.ObjectID `bson:"complaint_id,omitempty" json:"complaint_id,omitempty"`
-	CustomComplaint  *string            `bson:"custom_complaint,omitempty" json:"custom_complaint,omitempty"`
-	Anamnesis        *string            `bson:"anamnesis,omitempty" json:"anamnesis,omitempty"`
+	CustomComplaint  *string             `bson:"custom_complaint,omitempty" json:"custom_complaint,omitempty"`
+	AnamnesisID      *primitive.ObjectID `bson:"anamnesis_id,omitempty" json:"anamnesis_id,omitempty"`
 	DiagnosisID      *primitive.ObjectID `bson:"diagnosis_id,omitempty" json:"diagnosis_id,omitempty"`
 	TreatmentID      *primitive.ObjectID `bson:"treatment_id,omitempty" json:"treatment_id,omitempty"`
-	Comment          *string            `bson:"comment,omitempty" json:"comment,omitempty"`
+	Comment          *string             `bson:"comment,omitempty" json:"comment,omitempty"`
 	
 	// Formula state after this appointment
 	Formula          *Formula           `bson:"formula,omitempty" json:"formula,omitempty"`

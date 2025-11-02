@@ -101,7 +101,7 @@ func (m *AuthMiddleware) RequireAdmin() gin.HandlerFunc {
 
 // RequireDoctor checks if user is doctor or admin
 func (m *AuthMiddleware) RequireDoctor() gin.HandlerFunc {
-	return m.RequireRoles(entities.RoleDoctor)
+	return m.RequireRoles(entities.RoleDoctor, entities.RoleAdmin)
 }
 
 // RequireReceptionist checks if user is receptionist or admin

@@ -1,0 +1,16 @@
+{
+  "version": "2.5.0",
+  "summary": {
+    "title": "New Threat Model",
+    "owner": "Zhangeldy",
+    "description": "It is a system that provides client management for the dental clinics. It is fully in-corporate software with now external customers. There receptionists can create client cards, book the appointments. Doctors are able to complete appointments. I have one more role: admin, who is capable of covering all of the functionality. Moreover, there is a dental charts and client’s appointments history that is not accessible for receptionists.",
+    "id": 0
+  },
+  "detail": {
+    "contributors": [],
+    "diagrams": [],
+    "diagramTop": 0,
+    "reviewer": "Zhangeldy",
+    "threatTop": 0
+  }
+}

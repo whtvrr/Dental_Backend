@@ -174,10 +174,6 @@ definitions:
     type: object
   requests.CreateComplaintRequest:
     properties:
-      category:
-        type: string
-      description:
-        type: string
       title:
         type: string
     required:
@@ -202,10 +198,6 @@ definitions:
     type: object
   requests.UpdateComplaintRequest:
     properties:
-      category:
-        type: string
-      description:
-        type: string
       title:
         type: string
     required:

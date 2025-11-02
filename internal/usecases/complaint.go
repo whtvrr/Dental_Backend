@@ -37,7 +37,3 @@ func (uc *ComplaintUseCase) DeleteComplaint(ctx context.Context, id primitive.Ob
 func (uc *ComplaintUseCase) ListComplaints(ctx context.Context, offset, limit int) ([]*entities.Complaint, error) {
 	return uc.complaintRepo.List(ctx, offset, limit)
 }
-
-func (uc *ComplaintUseCase) GetComplaintsByCategory(ctx context.Context, category string) ([]*entities.Complaint, error) {
-	return uc.complaintRepo.GetByCategory(ctx, category)
-}

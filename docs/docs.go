@@ -2096,12 +2096,6 @@ const docTemplate = `{
                 "title"
             ],
             "properties": {
-                "category": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
                 "title": {
                     "type": "string"
                 }
@@ -2138,12 +2132,6 @@ const docTemplate = `{
                 "title"
             ],
             "properties": {
-                "category": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
                 "title": {
                     "type": "string"
                 }

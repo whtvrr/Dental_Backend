@@ -2093,12 +2093,6 @@
                 "title"
             ],
             "properties": {
-                "category": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
                 "title": {
                     "type": "string"
                 }
@@ -2135,12 +2129,6 @@
                 "title"
             ],
             "properties": {
-                "category": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
                 "title": {
                     "type": "string"
                 }

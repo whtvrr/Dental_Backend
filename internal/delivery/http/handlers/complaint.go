@@ -42,9 +42,7 @@ func (h *ComplaintHandler) CreateComplaint(c *gin.Context) {
 	}
 
 	complaint := entities.Complaint{
-		Title:       req.Title,
-		Description: req.Description,
-		Category:    req.Category,
+		Title: req.Title,
 	}
 
 	if err := h.complaintUseCase.CreateComplaint(c.Request.Context(), &complaint); err != nil {
@@ -111,10 +109,8 @@ func (h *ComplaintHandler) UpdateComplaint(c *gin.Context) {
 	}
 
 	complaint := entities.Complaint{
-		ID:          id,
-		Title:       req.Title,
-		Description: req.Description,
-		Category:    req.Category,
+		ID:    id,
+		Title: req.Title,
 	}
 
 	if err := h.complaintUseCase.UpdateComplaint(c.Request.Context(), &complaint); err != nil {

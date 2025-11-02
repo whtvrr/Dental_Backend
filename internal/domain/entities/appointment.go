@@ -33,7 +33,10 @@ type Appointment struct {
 	
 	// Formula state after this appointment
 	Formula          *Formula           `bson:"formula,omitempty" json:"formula,omitempty"`
-	
+
+	// Teeth numbers treated in this appointment (1-32)
+	TeethNumbers     []int              `bson:"teeth_numbers,omitempty" json:"teeth_numbers,omitempty"`
+
 	CreatedAt        time.Time          `bson:"created_at" json:"created_at"`
 	UpdatedAt        time.Time          `bson:"updated_at" json:"updated_at"`
 }

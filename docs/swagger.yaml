@@ -31,6 +31,11 @@ definitions:
         type: string
       status:
         $ref: '#/definitions/entities.AppointmentStatus'
+      teeth_numbers:
+        description: Teeth numbers treated in this appointment (1-32)
+        items:
+          type: integer
+        type: array
       treatment_id:
         type: string
       updated_at:
@@ -249,6 +254,10 @@ definitions:
         type: string
       formula:
         $ref: '#/definitions/entities.Formula'
+      teeth_numbers:
+        items:
+          type: integer
+        type: array
       treatment_id:
         type: string
     required:

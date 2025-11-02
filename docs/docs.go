@@ -1886,6 +1886,13 @@ const docTemplate = `{
                 "status": {
                     "$ref": "#/definitions/entities.AppointmentStatus"
                 },
+                "teeth_numbers": {
+                    "description": "Teeth numbers treated in this appointment (1-32)",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
                 "treatment_id": {
                     "type": "string"
                 },
@@ -2208,6 +2215,12 @@ const docTemplate = `{
                 },
                 "formula": {
                     "$ref": "#/definitions/entities.Formula"
+                },
+                "teeth_numbers": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 },
                 "treatment_id": {
                     "type": "string"

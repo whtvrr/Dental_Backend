@@ -65,6 +65,12 @@ func (uc *AppointmentUseCase) CompleteAppointment(ctx context.Context, id primit
 		return err
 	}
 
+	if medicalData.TeethNumbers != nil {
+		if err := validateTeethNumbers(medicalData.TeethNumbers); err != nil {
+			return err
+		}
+	}
+
 	// Update appointment with medical data
 	appointment.ComplaintID = medicalData.ComplaintID
 	appointment.CustomComplaint = medicalData.CustomComplaint
@@ -72,6 +78,7 @@ func (uc *AppointmentUseCase) CompleteAppointment(ctx context.Context, id primit
 	appointment.DiagnosisID = medicalData.DiagnosisID
 	appointment.TreatmentID = medicalData.TreatmentID
 	appointment.Comment = medicalData.Comment
+	appointment.TeethNumbers = medicalData.TeethNumbers
 	appointment.Status = entities.AppointmentStatusCompleted
 
 	// Completion timestamp for all tooth statuses
@@ -202,6 +209,7 @@ type AppointmentMedicalData struct {
 	Comment         *string             `json:"comment,omitempty"`
 	ClientID        primitive.ObjectID  `json:"client_id" binding:"required"`
 	Formula         *entities.Formula   `json:"formula,omitempty"`
+	TeethNumbers    []int               `json:"teeth_numbers,omitempty"`
 }
 
 // mergeFormulas merges appointment formula into existing user formula
@@ -264,4 +272,23 @@ func (uc *AppointmentUseCase) mergeToothParts(existing, appointment *entities.To
 			existing.Segments[key] = status
 		}
 	}
+}
+
+// validateTeethNumbers validates that all teeth numbers are between 1-32 and unique
+func validateTeethNumbers(teethNumbers []int) error {
+	if len(teethNumbers) == 0 {
+		return nil
+	}
+
+	seen := make(map[int]bool)
+	for _, num := range teethNumbers {
+		if num < 1 || num > 32 {
+			return errors.New("teeth numbers must be between 1 and 32")
+		}
+		if seen[num] {
+			return errors.New("duplicate teeth numbers are not allowed")
+		}
+		seen[num] = true
+	}
+	return nil
 }

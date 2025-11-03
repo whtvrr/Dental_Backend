@@ -46,11 +46,19 @@ func (r *complaintRepository) GetByID(ctx context.Context, id primitive.ObjectID
 
 func (r *complaintRepository) Update(ctx context.Context, complaint *entities.Complaint) error {
 	complaint.UpdatedAt = time.Now()
-	
+
+	// Only update the fields that should change, preserve created_at
+	update := bson.M{
+		"$set": bson.M{
+			"title":      complaint.Title,
+			"updated_at": complaint.UpdatedAt,
+		},
+	}
+
 	_, err := r.collection.UpdateOne(
 		ctx,
 		bson.M{"_id": complaint.ID},
-		bson.M{"$set": complaint},
+		update,
 	)
 	return err
 }

@@ -47,10 +47,18 @@ func (r *anamnesisRepository) GetByID(ctx context.Context, id primitive.ObjectID
 func (r *anamnesisRepository) Update(ctx context.Context, anamnesis *entities.Anamnesis) error {
 	anamnesis.UpdatedAt = time.Now()
 
+	// Only update the fields that should change, preserve created_at
+	update := bson.M{
+		"$set": bson.M{
+			"text":       anamnesis.Text,
+			"updated_at": anamnesis.UpdatedAt,
+		},
+	}
+
 	_, err := r.collection.UpdateOne(
 		ctx,
 		bson.M{"_id": anamnesis.ID},
-		bson.M{"$set": anamnesis},
+		update,
 	)
 	return err
 }

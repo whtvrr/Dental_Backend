@@ -166,6 +166,11 @@ func (h *AppointmentHandler) CompleteAppointment(c *gin.Context) {
 	}
 
 	if err := h.appointmentUseCase.CompleteAppointment(c.Request.Context(), id, &medicalData); err != nil {
+		// Check if it's a validation error
+		if usecases.IsValidationError(err) {
+			c.JSON(http.StatusBadRequest, response.BadRequest(err.Error()))
+			return
+		}
 		c.JSON(http.StatusInternalServerError, response.InternalServerError(err.Error()))
 		return
 	}

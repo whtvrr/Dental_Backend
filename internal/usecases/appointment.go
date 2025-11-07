@@ -10,6 +10,26 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+// ValidationError represents a validation error that should return 400 Bad Request
+type ValidationError struct {
+	Message string
+}
+
+func (e *ValidationError) Error() string {
+	return e.Message
+}
+
+// NewValidationError creates a new validation error
+func NewValidationError(message string) error {
+	return &ValidationError{Message: message}
+}
+
+// IsValidationError checks if an error is a validation error
+func IsValidationError(err error) bool {
+	var validationErr *ValidationError
+	return errors.As(err, &validationErr)
+}
+
 type AppointmentUseCase struct {
 	appointmentRepo repositories.AppointmentRepository
 	userRepo        repositories.UserRepository
@@ -274,19 +294,25 @@ func (uc *AppointmentUseCase) mergeToothParts(existing, appointment *entities.To
 	}
 }
 
-// validateTeethNumbers validates that all teeth numbers are between 1-32 and unique
+// validateTeethNumbers validates that the array length is not more than 32 and teeth numbers are unique
 func validateTeethNumbers(teethNumbers []int) error {
 	if len(teethNumbers) == 0 {
 		return nil
 	}
 
+	// Check that array length doesn't exceed 32
+	if len(teethNumbers) > 32 {
+		return NewValidationError("maximum 32 teeth numbers allowed")
+	}
+
+	// Check for duplicates and ensure all numbers are positive
 	seen := make(map[int]bool)
 	for _, num := range teethNumbers {
-		if num < 1 || num > 32 {
-			return errors.New("teeth numbers must be between 1 and 32")
+		if num < 1 {
+			return NewValidationError("teeth numbers must be positive")
 		}
 		if seen[num] {
-			return errors.New("duplicate teeth numbers are not allowed")
+			return NewValidationError("duplicate teeth numbers are not allowed")
 		}
 		seen[num] = true
 	}
